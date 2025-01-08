@@ -32,17 +32,6 @@ jobs:
           docker build -t eunsxx/bulk-server .
           docker push eunsxx/bulk-server
 
-      - name: Send docker-compose.yml and .env.prod to Server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ubuntu
-          key: ${{ secrets.KEY }}
-          source: |
-            ./docker-compose.yml
-            ./.env.prod
-          target: /home/ubuntu/app
-
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
         with:
