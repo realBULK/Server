@@ -1,0 +1,61 @@
+package umc7th.bulk.user.config;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.stereotype.Component;
+import umc7th.bulk.user.service.UserService;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+
+@Component
+@RequiredArgsConstructor
+public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
+
+    private final UserService userService;
+    private final OAuth2AuthorizedClientService authorizedClientService;
+
+    @Override
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        var oAuth2User = (org.springframework.security.oauth2.core.user.DefaultOAuth2User) authentication.getPrincipal();
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+
+        // 사용자 정보 추출하기
+        String kakaoId = String.valueOf(attributes.get("id"));
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        String email = (String) kakaoAccount.get("email");
+        String gender = (String) kakaoAccount.get("gender");
+        String birthyear = (String) kakaoAccount.get("birthyear");
+
+        // 사용자 존재 여부 확인
+        if (userService.userExists(kakaoId)) {
+            response.sendRedirect("/home");
+            return; // 이미 존재하면 더 이상 저장 로직을 실행하지 않음
+        }
+
+        // 액세스 토큰 및 리프레시 토큰 추출
+        Optional<OAuth2AuthorizedClient> optionalClient = Optional.ofNullable(
+                authorizedClientService.loadAuthorizedClient("kakao", oAuth2User.getName())
+        );
+
+        String accessToken = optionalClient.map(OAuth2AuthorizedClient::getAccessToken)
+                .map(token -> token.getTokenValue())
+                .orElse(null);
+
+        String refreshToken = optionalClient.map(OAuth2AuthorizedClient::getRefreshToken)
+                .map(token -> token.getTokenValue())
+                .orElse(null);
+
+        userService.saveUser(kakaoId, email, gender, birthyear, accessToken, refreshToken);
+
+        // 새로운 사용자는 /welcome으로 리다이렉트
+        response.sendRedirect("/welcome");
+    }
+}
