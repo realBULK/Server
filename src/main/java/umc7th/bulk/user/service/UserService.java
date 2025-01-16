@@ -43,8 +43,6 @@ public class UserService {
                 .refreshToken(refreshToken)
                 .build();
 
-        System.out.println("Saving User: " + kakaoId + ", " + email + ", " + gender + ", " + birthyear);
-
         return userRepository.save(user);
     }
 
