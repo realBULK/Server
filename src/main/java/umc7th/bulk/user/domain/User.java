@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import umc7th.bulk.global.BaseTimeEntity;
 
 @Entity
@@ -17,7 +18,6 @@ public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
     private Long id;
 
     @Column(nullable = false, unique = true, name = "kakao_id")
@@ -65,7 +65,7 @@ public class User extends BaseTimeEntity {
     @Column(nullable = true, name = "favorite_food")
     private String favoriteFood;
 
-    @Column(nullable = true, name = "record_complete")
+    @Column(nullable = false, name = "record_complete")
     private boolean recordComplete;
 
     @Column(nullable = false, name = "access_token")
@@ -73,4 +73,38 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false, name = "refresh_token")
     private String refreshToken;
+
+    @Column(name = "calories")
+    private Long calories;
+
+    @Column(name = "fats")
+    private Long fats;
+
+    @Column(name = "proteins")
+    private Long proteins;
+
+    @Column(name = "carbos")
+    private Long carbos;
+
+    public void update(String nickname, Double height, Double weight, Double goalWeight, String activityLevel, String mealNumber, String cookTime,
+                       String deliveryNum, String mealTime, String eatingOut, String favoriteFood) {
+        this.nickname = nickname;
+        this.height = height;
+        this.weight = weight;
+        this.goalWeight = goalWeight;
+        this.activityLevel = activityLevel;
+        this.mealNumber = mealNumber;
+        this.cookTime = cookTime;
+        this.deliveryNum = deliveryNum;
+        this.mealTime = mealTime;
+        this.eatingOut = eatingOut;
+        this.favoriteFood = favoriteFood;
+    }
+
+    public void reportUpdate(Long calories, Long carbos, Long proteins, Long fats) {
+        this.calories = calories;
+        this.carbos = carbos;
+        this.proteins = proteins;
+        this.fats = fats;
+    }
 }

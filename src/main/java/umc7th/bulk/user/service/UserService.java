@@ -41,6 +41,7 @@ public class UserService {
                 .birthyear(birthyear)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .recordComplete(false)//로그인이 먼저 되면 이부분이 우선적으로 저장되는데, recordComplete도 false로 같이 저장하는게 좋을것같아요,,
                 .build();
 
         return userRepository.save(user);
