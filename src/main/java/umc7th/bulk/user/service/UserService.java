@@ -72,4 +72,6 @@ public class UserService {
     public boolean userExists(String kakaoId) {
         return userRepository.existsByKakaoId(kakaoId);
     }
+
+
 }
