@@ -109,4 +109,20 @@ public class UserResponseDTO {
 
     }
 
+    @Builder
+    @Getter
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class UserInfoDTO {
+        private UserDTO.CharacterDTO characterDTO;
+        private UserDTO.UserNutritionDTO nutritionDTO;
+
+        public static UserInfoDTO from(UserDTO.CharacterDTO bulkCharacterDTO, UserDTO.UserNutritionDTO nutritionDTO) {
+            return UserInfoDTO.builder()
+                    .characterDTO(bulkCharacterDTO)
+                    .nutritionDTO(nutritionDTO)
+                    .build();
+        }
+    }
+
 }
