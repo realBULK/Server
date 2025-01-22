@@ -21,17 +21,17 @@ public class Food {
     @Column(name = "gram")
     private Long gram;
 
-    @Column(name = "calorie")
-    private Long cal;
+    @Column(name = "calories")
+    private Long calories;
 
-    @Column(name = "carbohydrate")
-    private Long carb;
+    @Column(name = "carbos")
+    private Long carbos;
 
-    @Column(name = "protein")
-    private Long protein;
+    @Column(name = "proteins")
+    private Long proteins;
 
-    @Column(name = "fat")
-    private Long fat;
+    @Column(name = "fats")
+    private Long fats;
 
 }
 
