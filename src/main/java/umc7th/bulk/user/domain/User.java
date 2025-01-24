@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.global.BaseTimeEntity;
 
 @Entity
@@ -85,6 +86,22 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "carbos")
     private Long carbos;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "character_id")
+    private BulkCharacter bulkCharacter;
+
+    @Column(name = "cur_calories")
+    private Long curCalories;
+
+    @Column(name = "cur_fats")
+    private Long curFats;
+
+    @Column(name = "cur_proteins")
+    private Long curProteins;
+
+    @Column(name = "cur_carbos")
+    private Long curCarbos;
 
     public void update(String nickname, Double height, Double weight, Double goalWeight, String activityLevel, String mealNumber, String cookTime,
                        String deliveryNum, String mealTime, String eatingOut, String favoriteFood) {
