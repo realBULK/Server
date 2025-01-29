@@ -1,24 +1,26 @@
-package umc7th.bulk.dayplan.entity;
+package umc7th.bulk.mealItem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import umc7th.bulk.user.domain.User;
+import umc7th.bulk.meal.entity.Meal;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class DayPlan {
+public class MealItem { // 각 식사별 음식 정보
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "day_plan_id")
+    @Column(name = "meal_item_id")
     private Long id;
 
-    @Column(name = "day_of_week", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private DayOfWeek day;
+    @Column(name = "meal_item_name", nullable = false)
+    private String name;
+
+    @Column(name = "gram")
+    private Long gram;
 
     @Column(name = "calories")
     private Long calories;
@@ -33,7 +35,8 @@ public class DayPlan {
     private Long fats;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
+    @JoinColumn(name = "meal_id")
+    private Meal meal;
 }
+
+

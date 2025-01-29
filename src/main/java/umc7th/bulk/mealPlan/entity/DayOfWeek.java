@@ -1,4 +1,4 @@
-package umc7th.bulk.dayplan.entity;
+package umc7th.bulk.mealPlan.entity;
 
 import lombok.Getter;
 
