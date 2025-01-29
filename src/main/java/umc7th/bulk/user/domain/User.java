@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.global.BaseTimeEntity;
+import umc7th.bulk.group.entity.Group;
 
 @Entity
 @Table(name = "user")
@@ -86,6 +87,10 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "carbos")
     private Long carbos;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = true)
+    private Group group;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "character_id")
