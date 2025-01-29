@@ -68,7 +68,7 @@ public class GroupService {
                             .map(emoji -> new EmojiDto(emoji.getEmojiRecord().getEmojiType(), 1)) // 개수 계산 추가 필요
                             .toList();
 
-                    return new TodayMemberDto(user.getId(), user.getNickname(), user.getCharacter().getId(), emojis);
+                    return new TodayMemberDto(user.getId(), user.getNickname(), user.getBulkCharacter().getId(), emojis);
                 })
                 .toList();
     }

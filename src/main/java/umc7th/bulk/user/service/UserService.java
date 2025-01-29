@@ -11,7 +11,11 @@ import reactor.core.publisher.Mono;
 import umc7th.bulk.global.error.GeneralErrorCode;
 import umc7th.bulk.global.error.exception.CustomException;
 import umc7th.bulk.user.domain.User;
+import umc7th.bulk.user.exception.UserErrorCode;
+import umc7th.bulk.user.exception.UserException;
 import umc7th.bulk.user.repository.UserRepository;
+
+import static umc7th.bulk.user.dto.UserDTO.*;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +76,20 @@ public class UserService {
 
     public boolean userExists(String kakaoId) {
         return userRepository.existsByKakaoId(kakaoId);
+    }
+
+    public CharacterDTO getCharacter(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserException(UserErrorCode.USER_NOT_FOUND)
+        );
+        return new CharacterDTO(user);
+    }
+
+    public UserNutritionDTO getUserNutrition(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserException(UserErrorCode.USER_NOT_FOUND)
+        );
+        return new UserNutritionDTO(user);
     }
 
 

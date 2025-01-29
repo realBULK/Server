@@ -89,13 +89,24 @@ public class User extends BaseTimeEntity {
     private Long carbos;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "character_id", nullable = true)
-    private BulkCharacter character;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true)
     private Group group;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "character_id")
+    private BulkCharacter bulkCharacter;
+
+    @Column(name = "cur_calories")
+    private Long curCalories;
+
+    @Column(name = "cur_fats")
+    private Long curFats;
+
+    @Column(name = "cur_proteins")
+    private Long curProteins;
+
+    @Column(name = "cur_carbos")
+    private Long curCarbos;
 
     public void update(String nickname, Double height, Double weight, Double goalWeight, String activityLevel, String mealNumber, String cookTime,
                        String deliveryNum, String mealTime, String eatingOut, String favoriteFood) {
