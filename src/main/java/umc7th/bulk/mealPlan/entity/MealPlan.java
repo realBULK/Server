@@ -34,5 +34,7 @@ public class MealPlan extends BaseTimeEntity {
     private User user;
 
     @OneToMany(mappedBy = "mealPlan", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<DailyMeal> dailyMeals = new ArrayList<>();
+
 }

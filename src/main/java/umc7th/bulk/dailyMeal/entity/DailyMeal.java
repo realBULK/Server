@@ -42,5 +42,7 @@ public class DailyMeal {
     private MealPlan mealPlan;
 
     @OneToMany(mappedBy = "dailyMeal", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Meal> meals = new ArrayList<>();
+
 }
