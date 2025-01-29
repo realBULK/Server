@@ -7,7 +7,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import umc7th.bulk.global.error.BaseErrorCode;
+import umc7th.bulk.global.error.exception.CustomException;
 import umc7th.bulk.global.success.BaseSuccessCode;
 
 @Builder
@@ -65,6 +67,7 @@ public class CustomResponse<T> {
      * @param errorCode
      * @return CustomResponse
      */
+    @ExceptionHandler(CustomException.class)
     public static CustomResponse<?> fail(BaseErrorCode errorCode) {
         return CustomResponse.builder()
                 .isSuccess(false)

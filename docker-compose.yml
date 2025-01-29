@@ -8,9 +8,12 @@ services:
       - "8080:8080"
     restart: always
     volumes:
-      - .:/app
+      - type: bind
+        source: /home/ubuntu/app/application.yml
+        target: /app/application.yml
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CONFIG_LOCATION=/app/application.yml
     env_file:
       - .env.prod
 volumes:
