@@ -14,4 +14,31 @@ public class MealItemDTO {
             name = mealItem.getName();
         }
     }
+
+    @Getter
+    public static class MealItemPreviewDTO {
+        private Long id;
+        private String name;
+        private String unit;
+        private Long gradePeopleNum;
+        private Double grade;
+        private Long calories;
+        private Long carbos;
+        private Long proteins;
+        private Long fats;
+        private Long gram;
+
+        public MealItemPreviewDTO(MealItem mealItem) {
+            id = mealItem.getId();
+            name = mealItem.getName();
+            unit = mealItem.getUnit();
+            gradePeopleNum = mealItem.getGradePeopleNum();
+            grade = mealItem.getGrade();
+            calories = mealItem.getCalories();
+            carbos = mealItem.getCarbos();
+            proteins = mealItem.getProteins();
+            fats = mealItem.getFats();
+            gram = mealItem.getGram();
+        }
+    }
 }

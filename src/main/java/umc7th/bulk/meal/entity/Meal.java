@@ -5,6 +5,7 @@ import lombok.*;
 import umc7th.bulk.dailyMeal.entity.DailyMeal;
 import umc7th.bulk.global.BaseTimeEntity;
 import umc7th.bulk.mealItem.entity.MealItem;
+import umc7th.bulk.mealMealItemMapping.entity.MealMealItemMapping;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -48,5 +49,5 @@ public class Meal extends BaseTimeEntity { // 식사 정보
 
     @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<MealItem> mealItems = new ArrayList<>();
+    private List<MealMealItemMapping> mealMealItemMappings = new ArrayList<>();
 }

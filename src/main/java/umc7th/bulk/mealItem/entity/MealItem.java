@@ -2,7 +2,10 @@ package umc7th.bulk.mealItem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import umc7th.bulk.meal.entity.Meal;
+import umc7th.bulk.mealMealItemMapping.entity.MealMealItemMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,9 +37,20 @@ public class MealItem { // 각 식사별 음식 정보
     @Column(name = "fats")
     private Long fats;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "meal_id")
-    private Meal meal;
+    @Column(name = "unit", length = 30)
+    private String unit;
+
+    @Column(name = "grade")
+    private Double grade; // 음식 평점
+
+    @Column(name = "grade_people")
+    private Long gradePeopleNum; // 평점 인원
+
+    @OneToMany(mappedBy = "mealItem", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<MealMealItemMapping> mealMealItemMappings = new ArrayList<>();
+
+
 }
 
 
