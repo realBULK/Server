@@ -19,7 +19,7 @@ public class MealPlanController {
     private final MealPlanQueryService mealPlanQueryService;
     private final UserService userService;
 
-    @GetMapping("/{mealPlanId}")
+    @GetMapping("/mealPlanId")
     public CustomResponse<?> getMealWeekPlan(
             @RequestParam Long userId,
             @RequestParam Long mealPlanId) {
