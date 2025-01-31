@@ -24,4 +24,7 @@ public class EmojiRecord extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String emojiType; // 이모지 유형
 
+    public void setEmojiType(String emojiType) {
+        this.emojiType = emojiType;
+    }
 }

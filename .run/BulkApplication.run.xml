@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BulkApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" activateToolWindowBeforeRun="false" nameIsGenerated="true">
+    <option name="INCLUDE_PROVIDED_SCOPE" value="false" />
+    <module name="bulk.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="umc7th.bulk.BulkApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
