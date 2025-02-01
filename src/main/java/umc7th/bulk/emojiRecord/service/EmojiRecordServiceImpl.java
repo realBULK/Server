@@ -74,8 +74,9 @@ public class EmojiRecordServiceImpl implements EmojiRecordService {
     public void deleteEmoji(Long groupId, Long emojiId) {
         EmojiRecord emojiRecord = emojiRecordRepository.findById(emojiId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid emoji ID"));
-
+        userEmojiRepository.deleteByEmojiRecord(emojiRecord);
         emojiRecordRepository.delete(emojiRecord);
+        emojiRecordRepository.flush();
     }
 
 
