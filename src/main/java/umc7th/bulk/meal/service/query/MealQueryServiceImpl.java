@@ -43,6 +43,8 @@ public class MealQueryServiceImpl implements MealQueryService{
                 .filter(m -> m.getType() == type)
                 .findFirst()
                 .orElseThrow(() -> new MealErrorException(MealErrorCode.NOT_FOUND));
+
+        // 유저 조회
         Long userId = meal.getDailyMeal().getMealPlan().getUser().getId();
 
         // MealMealItemMapping 통해 MealItem 가져오기
