@@ -2,7 +2,6 @@ package umc7th.bulk.userEmoji.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import umc7th.bulk.emojiRecord.entity.EmojiRecord;
-import umc7th.bulk.group.entity.Group;
 import umc7th.bulk.userEmoji.entity.UserEmoji;
 import umc7th.bulk.user.domain.User;
 

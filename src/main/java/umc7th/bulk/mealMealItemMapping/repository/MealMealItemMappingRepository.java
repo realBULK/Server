@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import umc7th.bulk.meal.entity.MealType;
 import umc7th.bulk.mealMealItemMapping.entity.MealMealItemMapping;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MealMealItemMappingRepository extends JpaRepository<MealMealItemMapping, Long> {
@@ -26,4 +27,13 @@ public interface MealMealItemMappingRepository extends JpaRepository<MealMealIte
             @Param("cursorId") Long cursorId,
             Pageable pageable
     );
+
+    @Query("SELECT m FROM MealMealItemMapping m " +
+            "JOIN FETCH m.meal meal " +
+            "WHERE meal.localDate = :date AND meal.type = :mealType")
+    List<MealMealItemMapping> findByMeal_LocalDateAndMeal_Type(
+            @Param("date") LocalDate date,
+            @Param("mealType") MealType mealType
+    );
+
 }

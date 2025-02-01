@@ -34,19 +34,31 @@ public class RecordServiceImpl implements RecordService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
+        // MealType 변환
+        MealType type = requestDto.getMealType();
+
+        // 기존 기록이 있는지 확인
+        Record existingRecord = recordRepository.findByUserAndDateAndMealType(user, requestDto.getDate(), type)
+                .orElse(null);
+
+        if (existingRecord != null) {
+            throw new IllegalArgumentException("이미 해당 날짜와 끼니에 대한 기록이 존재합니다.");
+        }
+
         // 사용자의 끼니(MealType)에 해당하는 식단 데이터 조회
-        List<MealMealItemMapping> mealMappings = mealMealItemMappingRepository.findMealItemsByUserAndMealWithCursor(
-                userId, requestDto.getMealType(), null, null).getContent();
+        List<MealMealItemMapping> mealMappings = mealMealItemMappingRepository.findByMeal_LocalDateAndMeal_Type(
+                requestDto.getDate(), requestDto.getMealType());
+
 
         if (mealMappings.isEmpty()) {
             throw new IllegalArgumentException("해당 끼니의 식단을 찾을 수 없습니다.");
         }
 
-        // Record 생성
+        // 새로운 Record 생성
         Record record = Record.builder()
                 .user(user)
                 .date(requestDto.getDate())
-                .mealType(requestDto.getMealType())
+                .mealType(type)
                 .foodPhoto(requestDto.getFoodPhoto())
                 .ateOnPlan(true)
                 .build();
@@ -55,10 +67,12 @@ public class RecordServiceImpl implements RecordService {
 
         // MealItem을 기반으로 RecordedFood 생성
         List<RecordedFood> recordedFoods = mealMappings.stream()
-                .map(mapping -> RecordedFood.builder()
+                .map(MealMealItemMapping::getMealItem) // MealItem 객체 리스트로 변환
+                .distinct() // MealItem 기준 중복 제거
+                .map(mealItem -> RecordedFood.builder()
                         .record(savedRecord)
-                        .foodId(mapping.getMealItem())
-                        .quantity(mapping.getMealItem().getGram().intValue())
+                        .foodId(mealItem)
+                        .quantity(mealItem.getGram() != null ? mealItem.getGram().intValue() : 100) // 기본값 설정
                         .build())
                 .collect(Collectors.toList());
 
@@ -73,11 +87,13 @@ public class RecordServiceImpl implements RecordService {
                 .foods(recordedFoods.stream()
                         .map(food -> RecordResponseDto.FoodResponseDto.builder()
                                 .foodId(food.getFoodId().getId())
+                                .foodName(food.getFoodId().getName())
                                 .quantity(food.getQuantity())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
     }
+
 
 
     @Transactional(readOnly = true)
