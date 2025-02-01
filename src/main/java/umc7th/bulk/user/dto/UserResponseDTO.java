@@ -36,10 +36,10 @@ public class UserResponseDTO {
         public static ReviewPreviewDTO from(User user) {
             return ReviewPreviewDTO.builder()
                     .id(user.getId())
-                    .calories(user.getCalories())
-                    .carbos(user.getCarbos())
-                    .proteins(user.getProteins())
-                    .fats(user.getFats())
+                    .calories(user.getTarget_calories())
+                    .carbos(user.getTarget_carbos())
+                    .proteins(user.getTarget_proteins())
+                    .fats(user.getTarget_fats())
                     .build();
         }
     }
@@ -62,10 +62,10 @@ public class UserResponseDTO {
                     .id(user.getId())
                     .weight(user.getWeight())
                     .goalWeight(user.getGoalWeight())
-                    .calories(user.getCalories())
-                    .carbos(user.getCarbos())
-                    .proteins(user.getProteins())
-                    .fats(user.getFats())
+                    .calories(user.getTarget_calories())
+                    .carbos(user.getTarget_carbos())
+                    .proteins(user.getTarget_proteins())
+                    .fats(user.getTarget_fats())
                     .build();
         }
     }
