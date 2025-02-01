@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.global.BaseTimeEntity;
 import umc7th.bulk.group.entity.Group;
@@ -76,17 +75,17 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, name = "refresh_token")
     private String refreshToken;
 
-    @Column(name = "calories")
-    private Long calories;
+    @Column(name = "target_calories")
+    private Long target_calories;
 
-    @Column(name = "fats")
-    private Long fats;
+    @Column(name = "target_fats")
+    private Long target_fats;
 
-    @Column(name = "proteins")
-    private Long proteins;
+    @Column(name = "target_proteins")
+    private Long target_proteins;
 
-    @Column(name = "carbos")
-    private Long carbos;
+    @Column(name = "target_carbos")
+    private Long target_carbos;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true)
@@ -108,6 +107,12 @@ public class User extends BaseTimeEntity {
     @Column(name = "cur_carbos")
     private Long curCarbos;
 
+    @Column(name = "BMR", nullable = false)
+    private Long bmr;
+
+    @Column(name = "TDEE", nullable = false)
+    private Long tdee;
+
     public void update(String nickname, Double height, Double weight, Double goalWeight, String activityLevel, String mealNumber, String cookTime,
                        String deliveryNum, String mealTime, String eatingOut, String favoriteFood) {
         this.nickname = nickname;
@@ -124,9 +129,9 @@ public class User extends BaseTimeEntity {
     }
 
     public void reportUpdate(Long calories, Long carbos, Long proteins, Long fats) {
-        this.calories = calories;
-        this.carbos = carbos;
-        this.proteins = proteins;
-        this.fats = fats;
+        this.target_calories = calories;
+        this.target_carbos = carbos;
+        this.target_proteins = proteins;
+        this.target_fats = fats;
     }
 }
