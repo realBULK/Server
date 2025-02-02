@@ -41,6 +41,7 @@ public class Record {
     private MealType mealType;
 
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<RecordedFood> foods = new ArrayList<>();
 
 }
