@@ -23,6 +23,7 @@ public class Group extends BaseTimeEntity {
     private String groupName;
 
     @Column(nullable = false)
+    @Builder.Default
     private int currentStage = 1;
 
     private LocalDateTime endDate;
