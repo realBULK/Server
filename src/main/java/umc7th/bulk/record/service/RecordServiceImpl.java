@@ -29,9 +29,9 @@ public class RecordServiceImpl implements RecordService {
     private final MealMealItemMappingRepository mealMealItemMappingRepository;
 
     @Transactional
-    public RecordResponseDto createRecord(Long userId, RecordRequestDto requestDto) {
+    public RecordResponseDto createRecord(RecordRequestDto.Create requestDto) {
         // 사용자 조회
-        User user = userRepository.findById(userId)
+        User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
         // MealType 변환
