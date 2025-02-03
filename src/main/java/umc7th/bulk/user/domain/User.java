@@ -134,4 +134,9 @@ public class User extends BaseTimeEntity {
         this.target_proteins = proteins;
         this.target_fats = fats;
     }
+
+    public void updateTokens(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }
