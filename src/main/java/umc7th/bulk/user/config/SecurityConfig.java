@@ -22,7 +22,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**", "/user/**", "/test/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**", "/user/unlink", "/test/**", "/user/question/isDuplicated/**").permitAll()
                 .anyRequest().authenticated()
         );
 
