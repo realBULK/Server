@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import umc7th.bulk.meal.entity.MealType;
 import umc7th.bulk.mealItem.entity.MealItem;
 
+import java.util.Optional;
+
 public interface MealItemRepository extends JpaRepository<MealItem, Long> {
 
     @Query("SELECT mi FROM MealItem mi " +
@@ -23,5 +25,7 @@ public interface MealItemRepository extends JpaRepository<MealItem, Long> {
             @Param("type") MealType type,
             @Param("cursorId") Long cursorId,
             Pageable pageable);
+
+    Optional<MealItem> findByName(String name);
 
 }
