@@ -23,9 +23,8 @@ public class RecordController {
     @Operation(summary = "유저가 **식단대로 먹었어요** 선택 시 기록 등록")
     @PostMapping
     public ResponseEntity<CustomResponse<RecordResponseDto>> createRecord(
-            @RequestParam Long userId,
-            @RequestBody RecordRequestDto requestDto) {
-        RecordResponseDto responseDto = recordService.createRecord(userId, requestDto);
+            @RequestBody RecordRequestDto.Create requestDto) {
+        RecordResponseDto responseDto = recordService.createRecord(requestDto);
         return ResponseEntity.ok(CustomResponse.onSuccess(GeneralSuccessCode.OK, responseDto));
     }
 
