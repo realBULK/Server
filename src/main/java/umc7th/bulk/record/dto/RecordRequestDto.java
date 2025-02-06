@@ -21,7 +21,6 @@ public class RecordRequestDto {
     @NoArgsConstructor
     @Schema(description = "식단대로 먹었을 시 기록 생성 요청 DTO")
     public static class Create {
-        private Long userId;
         private LocalDate date;
         private MealType mealType;
     }
@@ -31,7 +30,6 @@ public class RecordRequestDto {
     @NoArgsConstructor
     @Schema(description = "식단과 다르게 먹었을 시 기록 생성 요청 DTO")
     public static class CreateNotFollowed {
-        private Long userId;
         private LocalDate date;
         private MealType mealType;
 
