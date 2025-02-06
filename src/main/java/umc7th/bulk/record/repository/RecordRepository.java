@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface RecordRepository extends JpaRepository<Record, Long> {
     Optional<Record> findByUserAndDateAndMealType(User user, LocalDate date, MealType mealType);
 
-    @Query("SELECT r FROM Record r JOIN FETCH r.foods WHERE r.user = :user AND r.date = :date AND r.mealType = :mealType")
+    @Query("SELECT r FROM Record r LEFT JOIN FETCH r.foods WHERE r.user = :user AND r.date = :date AND r.mealType = :mealType")
     Optional<Record> findByUserAndDateAndMealTypeWithFoods(@Param("user") User user, @Param("date") LocalDate date, @Param("mealType") MealType mealType);
 
 }

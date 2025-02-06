@@ -137,8 +137,7 @@ public class RecordServiceImpl implements RecordService {
         // 사용자 조회
         User user = userService.getAuthenticatedUserInfo();
 
-        log.info("🚀 createNotFollowedRecord 요청 시작: userId={}, date={}, mealType={}",
-                user.getId(), requestDto.getDate(), requestDto.getMealType());
+        log.info("🚀 createNotFollowedRecord 요청 시작: userId={}, date={}, mealType={}", user.getId(), requestDto.getDate(), requestDto.getMealType());
 
         // MealType 변환
         MealType type = requestDto.getMealType();
@@ -155,7 +154,7 @@ public class RecordServiceImpl implements RecordService {
             // GPT API 요청
             String requestText = "이 이미지는 음식 사진입니다.  \n" +
                     "해당 음식의 영양 성분을 분석하고 아래 예시와 동일한 JSON 형식만 반환하세요.  \n" +
-                    "**추가적인 설명, 텍스트, 코드 블록(\\`\\`\\`json 등)을 포함하지 마세요.**  \n" +
+                    "**추가적인 설명, 텍스트, 코드 블록(\\\\\\json 등)을 포함하지 마세요.**  \n" +
                     "반드시 JSON 데이터만 출력하세요.  \n\n" +
                     "예시:\n" +
                     "{\n" +
@@ -188,19 +187,18 @@ public class RecordServiceImpl implements RecordService {
                     "}\n\n" +
                     "**출력 형식:**  \n" +
                     "- 반드시 JSON 데이터만 반환하세요.  \n" +
-                    "- 설명이나 텍스트를 절대 추가하지 마세요.  \n" +
-                    "- 코드 블록(\\`\\`\\`json 등) 없이 JSON만 제공하세요.";
-
+                    "- 설명이나 텍스트를 절대 추가하지 마세요. 강조합니다.  \n" +
+                    "- 코드 블록(\\\\\\json 등) 없이 JSON만 제공하세요.";
             try {
                 log.info("🧠 GPT API 요청 시작...");
                 gptRawResponseString = aiCallService.requestImageAnalysis(requestDto.getImage(), requestText)
                         .getChoices().get(0).getMessage().getContent();
-
                 log.info("✅ GPT API 응답 성공 (Raw Response):\n{}", gptRawResponseString);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+
         // GPT 응답을 JSON으로 파싱
         ObjectMapper objectMapper = new ObjectMapper();
         Long totalCalories = 0L;
@@ -246,7 +244,6 @@ public class RecordServiceImpl implements RecordService {
                 .build();
 
         Record savedRecord = recordRepository.save(record);
-
         log.info("✅ Record 저장 완료: recordId={}", savedRecord.getId());
 
         // Response 생성

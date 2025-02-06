@@ -45,4 +45,8 @@ public class RecordedFood {
         this.proteins = proteins;
         this.fats = fats;
     }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
 }
