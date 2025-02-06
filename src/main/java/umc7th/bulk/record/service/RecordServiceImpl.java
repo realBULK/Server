@@ -1,19 +1,17 @@
 package umc7th.bulk.record.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc7th.bulk.meal.entity.MealType;
-import umc7th.bulk.mealItem.entity.MealItem;
-import umc7th.bulk.mealItem.repository.MealItemRepository;
 import umc7th.bulk.mealMealItemMapping.entity.MealMealItemMapping;
 import umc7th.bulk.mealMealItemMapping.repository.MealMealItemMappingRepository;
 import umc7th.bulk.record.dto.RecordRequestDto;
 import umc7th.bulk.record.dto.RecordResponseDto;
-import umc7th.bulk.record.dto.RecordWithGPTResponseDTO;
 import umc7th.bulk.record.entity.Record;
 import umc7th.bulk.record.gpt.service.AiCallService;
 import umc7th.bulk.record.repository.RecordRepository;
@@ -21,10 +19,11 @@ import umc7th.bulk.record.upload.S3Service;
 import umc7th.bulk.recordedFood.entity.RecordedFood;
 import umc7th.bulk.recordedFood.repository.RecordedFoodRepository;
 import umc7th.bulk.user.domain.User;
-import umc7th.bulk.user.repository.UserRepository;
+import umc7th.bulk.user.service.UserService;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,17 +34,15 @@ public class RecordServiceImpl implements RecordService {
 
     private final RecordRepository recordRepository;
     private final RecordedFoodRepository recordedFoodRepository;
-    private final UserRepository userRepository;
     private final MealMealItemMappingRepository mealMealItemMappingRepository;
     private final S3Service s3Service;
     private final AiCallService aiCallService;
-    private final MealItemRepository mealItemRepository;
+    private final UserService userService;
 
     @Transactional
     public RecordResponseDto createRecord(RecordRequestDto.Create requestDto) {
         // 사용자 조회
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+        User user = userService.getAuthenticatedUserInfo();
 
         // MealType 변환
         MealType type = requestDto.getMealType();
@@ -62,7 +59,6 @@ public class RecordServiceImpl implements RecordService {
         List<MealMealItemMapping> mealMappings = mealMealItemMappingRepository.findByMeal_LocalDateAndMeal_Type(
                 requestDto.getDate(), requestDto.getMealType());
 
-
         if (mealMappings.isEmpty()) {
             throw new IllegalArgumentException("해당 끼니의 식단을 찾을 수 없습니다.");
         }
@@ -73,22 +69,40 @@ public class RecordServiceImpl implements RecordService {
                 .date(requestDto.getDate())
                 .mealType(type)
                 .ateOnPlan(true)
+                .totalCalories(0L) // 기본값 설정
+                .totalCarbs(0L)
+                .totalProtein(0L)
+                .totalFat(0L)
                 .build();
 
         Record savedRecord = recordRepository.save(record);
 
         // MealItem을 기반으로 RecordedFood 생성
         List<RecordedFood> recordedFoods = mealMappings.stream()
-                .map(MealMealItemMapping::getMealItem) // MealItem 객체 리스트로 변환
-                .distinct() // MealItem 기준 중복 제거
+                .map(MealMealItemMapping::getMealItem)
+                .distinct()
                 .map(mealItem -> RecordedFood.builder()
                         .record(savedRecord)
                         .foodId(mealItem)
-                        .quantity(mealItem.getGram() != null ? mealItem.getGram().intValue() : 100) // 기본값 설정
+                        .quantity(mealItem.getGram() != null ? mealItem.getGram().intValue() : 100)
+                        .calories(mealItem.getCalories())
+                        .carbos(mealItem.getCarbos())
+                        .proteins(mealItem.getProteins())
+                        .fats(mealItem.getFats())
                         .build())
                 .collect(Collectors.toList());
 
         recordedFoodRepository.saveAll(recordedFoods);
+
+        // 영양소 합산
+        Long totalCalories = recordedFoods.stream().mapToLong(RecordedFood::getCalories).sum();
+        Long totalCarbs = recordedFoods.stream().mapToLong(RecordedFood::getCarbos).sum();
+        Long totalProtein = recordedFoods.stream().mapToLong(RecordedFood::getProteins).sum();
+        Long totalFat = recordedFoods.stream().mapToLong(RecordedFood::getFats).sum();
+
+        // Record에 영양소 값 업데이트
+        savedRecord.updateNutrients(totalCalories, totalCarbs, totalProtein, totalFat);
+        recordRepository.save(savedRecord);
 
         // Response 생성
         return RecordResponseDto.builder()
@@ -96,27 +110,35 @@ public class RecordServiceImpl implements RecordService {
                 .ateOnPlan(savedRecord.isAteOnPlan())
                 .mealType(savedRecord.getMealType())
                 .date(savedRecord.getDate())
+                .totalCalories(totalCalories)
+                .totalCarbs(totalCarbs)
+                .totalProtein(totalProtein)
+                .totalFat(totalFat)
+                .foodPhoto(null) // 식단 기반 저장이므로 사진 없음
+                .gptAnalysis(null) // GPT 응답 없음
                 .foods(recordedFoods.stream()
-                        .map(food -> RecordResponseDto.FoodResponseDto.builder()
-                                .foodId(food.getFoodId().getId())
+                        .map(food -> RecordResponseDto.FoodResponse.builder()
                                 .foodName(food.getFoodId().getName())
                                 .quantity(food.getQuantity())
+                                .grade(food.getFoodId().getGrade())
+                                .gradePeopleNum(food.getFoodId().getGradePeopleNum())
+                                .carbos(food.getCarbos())
+                                .proteins(food.getProteins())
+                                .fats(food.getFats())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
     }
 
-    @Transactional
-    public RecordWithGPTResponseDTO createNotFollowedRecord(RecordRequestDto.CreateNotFollowed requestDto) {
-        log.info("🚀 createNotFollowedRecord 요청 시작: userId={}, date={}, mealType={}",
-                requestDto.getUserId(), requestDto.getDate(), requestDto.getMealType());
 
+
+    @Transactional
+    public RecordResponseDto createNotFollowedRecord(RecordRequestDto.CreateNotFollowed requestDto) {
         // 사용자 조회
-        User user = userRepository.findById(requestDto.getUserId())
-                .orElseThrow(() -> {
-                    log.error("❌ 유저 조회 실패: userId={}", requestDto.getUserId());
-                    return new IllegalArgumentException("Invalid user ID");
-                });
+        User user = userService.getAuthenticatedUserInfo();
+
+        log.info("🚀 createNotFollowedRecord 요청 시작: userId={}, date={}, mealType={}",
+                user.getId(), requestDto.getDate(), requestDto.getMealType());
 
         // MealType 변환
         MealType type = requestDto.getMealType();
@@ -179,65 +201,116 @@ public class RecordServiceImpl implements RecordService {
                 throw new RuntimeException(e);
             }
         }
+        // GPT 응답을 JSON으로 파싱
+        ObjectMapper objectMapper = new ObjectMapper();
+        Long totalCalories = 0L;
+        Long totalCarbs = 0L;
+        Long totalProtein = 0L;
+        Long totalFat = 0L;
+        List<RecordResponseDto.FoodResponse> foods = new ArrayList<>();
 
-            // Record 생성
-            Record record = Record.builder()
-                    .user(user)
-                    .date(requestDto.getDate())
-                    .mealType(type)
-                    .foodPhoto(uploadedImageUrl)
-                    .ateOnPlan(requestDto.getImage() == null)
-                    .build();
+        try {
+            JsonNode gptResponseJson = objectMapper.readTree(gptRawResponseString);
+            totalCalories = gptResponseJson.get("total_calories").asLong();
+            JsonNode macros = gptResponseJson.get("macros");
+            totalCarbs = macros.get("carbohydrates").asLong();
+            totalProtein = macros.get("protein").asLong();
+            totalFat = macros.get("fat").asLong();
 
-            Record savedRecord = recordRepository.save(record);
-            log.info("✅ Record 저장 완료: recordId={}", savedRecord.getId());
+            for (JsonNode foodNode : gptResponseJson.get("foods")) {
+                foods.add(RecordResponseDto.FoodResponse.builder()
+                        .foodName(foodNode.get("name").asText())
+                        .quantity(100) // 기본값 설정
+                        .carbos(foodNode.get("carbohydrates").asLong(0)) // 기본값 0 처리
+                        .proteins(foodNode.get("protein").asLong(0))
+                        .fats(foodNode.get("fat").asLong(0))
+                        .build());
+            }
 
-            // Response 생성
-            log.info("🚀 createNotFollowedRecord 응답 생성 완료: recordId={}", savedRecord.getId());
-            return RecordWithGPTResponseDTO.builder()
-                    .recordId(savedRecord.getId())
-                    .ateOnPlan(savedRecord.isAteOnPlan())
-                    .mealType(savedRecord.getMealType())
-                    .date(savedRecord.getDate())
-                    .foodPhoto(uploadedImageUrl)
-                    .gptAnalysis(gptRawResponseString)
-                    .build();
+        } catch (JsonProcessingException e) {
+            log.error("❌ GPT 응답 JSON 파싱 오류", e);
+            throw new RuntimeException("GPT 응답을 파싱하는 동안 오류 발생");
+        }
 
+        // Record 생성
+        Record record = Record.builder()
+                .user(user)
+                .date(requestDto.getDate())
+                .mealType(type)
+                .foodPhoto(uploadedImageUrl)
+                .ateOnPlan(requestDto.getImage() == null)
+                .totalCalories(totalCalories)
+                .totalCarbs(totalCarbs)
+                .totalProtein(totalProtein)
+                .totalFat(totalFat)
+                .build();
+
+        Record savedRecord = recordRepository.save(record);
+
+        log.info("✅ Record 저장 완료: recordId={}", savedRecord.getId());
+
+        // Response 생성
+        return RecordResponseDto.builder()
+                .recordId(savedRecord.getId())
+                .ateOnPlan(savedRecord.isAteOnPlan())
+                .mealType(savedRecord.getMealType())
+                .date(savedRecord.getDate())
+                .foodPhoto(uploadedImageUrl)
+                .gptAnalysis(gptRawResponseString)
+                .totalCalories(totalCalories)
+                .totalCarbs(totalCarbs)
+                .totalProtein(totalProtein)
+                .totalFat(totalFat)
+                .foods(foods)
+                .build();
     }
 
 
+
     @Transactional(readOnly = true)
-    public RecordResponseDto getRecord(Long userId, LocalDate date, String mealType) {
-        // 유저 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+    public RecordResponseDto getRecord(User user, LocalDate date, String mealType) {
 
         // MealType 변환
         MealType type = MealType.valueOf(mealType.toUpperCase());
 
-        // 사용자의 기존 Record 조회
-        Record record = recordRepository.findByUserAndDateAndMealType(user, date, type)
+        // Lazy Loading 문제 해결을 위해 fetch join 사용
+        Record record = recordRepository.findByUserAndDateAndMealTypeWithFoods(user, date, type)
                 .orElseThrow(() -> new IllegalArgumentException("기록을 찾을 수 없습니다."));
 
-        // 응답으로 반환
-        List<RecordResponseDto.FoodResponseDto> foods = record.getFoods().stream()
-                .map(food -> RecordResponseDto.FoodResponseDto.builder()
-                        .foodId(food.getFoodId().getId())
+        // RecordedFood 목록 조회
+        List<RecordedFood> recordedFoods = record.getFoods();
+
+        // ✅ Lazy Loading 문제로 인해 recordedFoods가 빈 배열이 아닐지 체크
+        if (recordedFoods.isEmpty()) {
+            throw new IllegalStateException("기록된 음식이 없습니다. 데이터베이스를 확인하세요.");
+        }
+
+        // 응답으로 반환할 음식 목록
+        List<RecordResponseDto.FoodResponse> foods = recordedFoods.stream()
+                .map(food -> RecordResponseDto.FoodResponse.builder()
                         .foodName(food.getFoodId().getName())
                         .quantity(food.getQuantity())
+                        .grade(food.getFoodId().getGrade())
+                        .gradePeopleNum(food.getFoodId().getGradePeopleNum())
+                        .carbos(food.getFoodId().getCarbos())
+                        .proteins(food.getFoodId().getProteins())
+                        .fats(food.getFoodId().getFats())
                         .build())
                 .collect(Collectors.toList());
 
-        // Response 생성
+        // ✅ DB에서 제대로 값이 저장된 것이 맞다면 그대로 반환해야 함
         return RecordResponseDto.builder()
                 .recordId(record.getId())
                 .ateOnPlan(record.isAteOnPlan())
                 .mealType(record.getMealType())
                 .date(record.getDate())
+                .totalCalories(record.getTotalCalories()) // ✅ totalCalories가 0이면 DB 확인 필요
+                .totalCarbs(record.getTotalCarbs())
+                .totalProtein(record.getTotalProtein())
+                .totalFat(record.getTotalFat())
                 .foods(foods)
                 .build();
     }
-
 
 
 }

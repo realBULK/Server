@@ -1,5 +1,6 @@
 package umc7th.bulk.record.dto;
 
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 import umc7th.bulk.meal.entity.MealType;
@@ -16,13 +17,23 @@ public class RecordResponseDto {
     private boolean ateOnPlan;
     private LocalDate date;
     private MealType mealType;
-    private List<FoodResponseDto> foods;
+    private Long totalCalories;
+    private Long totalCarbs;
+    private Long totalProtein;
+    private Long totalFat;
+    private String foodPhoto;
+    private String gptAnalysis;
+    private List<FoodResponse> foods;
 
     @Getter
     @Builder
-    public static class FoodResponseDto {
-        private Long foodId;
+    public static class FoodResponse {
         private String foodName;
         private int quantity;
+        private Double grade;
+        private Long gradePeopleNum;
+        private Long carbos;
+        private Long proteins;
+        private Long fats;
     }
 }
