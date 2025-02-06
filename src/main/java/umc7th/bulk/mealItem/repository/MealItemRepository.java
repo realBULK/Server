@@ -1,5 +1,6 @@
 package umc7th.bulk.mealItem.repository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,6 +26,14 @@ public interface MealItemRepository extends JpaRepository<MealItem, Long> {
             @Param("type") MealType type,
             @Param("cursorId") Long cursorId,
             Pageable pageable);
+
+    // 최신순 정렬
+    @Query("SELECT m FROM MealItem m WHERE m.id < :cursor ORDER BY m.id DESC")
+    Page<MealItem> findByCursor(Long cursor, Pageable pageable);
+
+    // 검색어 기반
+    @Query("SELECT m FROM MealItem m WHERE m.name LIKE %:keyword% AND m.id < :cursor ORDER BY m.id DESC")
+    Page<MealItem> searchByKeyword(String keyword, Long cursor, Pageable pageable);
 
     // 음식 이름으로 조회
     Optional<MealItem> findByName(String name);
