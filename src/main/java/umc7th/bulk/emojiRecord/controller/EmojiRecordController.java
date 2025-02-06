@@ -13,6 +13,7 @@ import umc7th.bulk.emojiRecord.dto.EmojiRecordResponseDto;
 import umc7th.bulk.emojiRecord.service.EmojiRecordService;
 import umc7th.bulk.global.apiPayload.CustomResponse;
 import umc7th.bulk.global.success.GeneralSuccessCode;
+import umc7th.bulk.user.service.UserService;
 
 @RestController
 @RequiredArgsConstructor

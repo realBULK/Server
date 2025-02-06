@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "이모지 입력 요청 DTO")
 public class EmojiRecordRequestDto {
 
-    @Schema(description = "이모지를 입력하는 사용자 ID", example = "1")
-    private Long senderUserId;
-
     @Schema(description = "이모지를 받는 사용자 ID", example = "3")
     private Long receiverUserId;
 
