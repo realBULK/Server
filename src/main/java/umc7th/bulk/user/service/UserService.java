@@ -106,14 +106,6 @@ public class UserService {
                 new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 
-    public void updateTokens(String kakaoId, String accessToken, String refreshToken) {
-        User user = userRepository.findByKakaoId(kakaoId).orElseThrow(() ->
-                new UserException(UserErrorCode.USER_NOT_FOUND));
-
-        user.updateTokens(accessToken, refreshToken);
-        userRepository.save(user); // 토큰 정보 업데이트 후 저장
-    }
-
     public User findByKakaoId(String kakaoId) {
         return userRepository.findByKakaoId(kakaoId).orElseThrow(()->
                 new UserException(UserErrorCode.USER_NOT_FOUND));
