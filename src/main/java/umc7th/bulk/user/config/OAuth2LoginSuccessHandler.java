@@ -37,7 +37,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String gender = (String) kakaoAccount.get("gender");
         String birthyear = (String) kakaoAccount.get("birthyear");
 
-
         // OAuth2AuthorizedClient에서 토큰 추출
         Optional<OAuth2AuthorizedClient> optionalClient = Optional.ofNullable(
                 authorizedClientService.loadAuthorizedClient("kakao", oAuth2User.getName())
@@ -71,8 +70,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         );
         SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-
-//        System.out.println("Authentication: " + SecurityContextHolder.getContext().getAuthentication().getName());
-//        System.out.println("authentication.getPrincipal: " + authentication.getPrincipal());
+        // System.out.println("Authentication: " + SecurityContextHolder.getContext().getAuthentication());
     }
 }

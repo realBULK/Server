@@ -44,4 +44,25 @@ public class Record {
     @Builder.Default
     private List<RecordedFood> foods = new ArrayList<>();
 
+    @Column(name = "total_calories")
+    private Long totalCalories;
+
+    @Column(name = "total_carbs")
+    private Long totalCarbs;
+
+    @Column(name = "total_protein")
+    private Long totalProtein;
+
+    @Column(name = "total_fat")
+    private Long totalFat;
+
+    // ✅ 영양소 값 업데이트 메서드 추가
+    public void updateNutrients(Long totalCalories, Long totalCarbs, Long totalProtein, Long totalFat) {
+        this.totalCalories = totalCalories;
+        this.totalCarbs = totalCarbs;
+        this.totalProtein = totalProtein;
+        this.totalFat = totalFat;
+    }
+
+
 }

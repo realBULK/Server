@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import umc7th.bulk.global.apiPayload.CustomResponse;
 import umc7th.bulk.global.success.GeneralSuccessCode;
+import umc7th.bulk.user.domain.User;
+import umc7th.bulk.user.service.UserService;
 import umc7th.bulk.userEmoji.service.UserEmojiService;
 
 @RestController

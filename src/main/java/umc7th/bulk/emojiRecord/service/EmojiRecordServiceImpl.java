@@ -12,6 +12,7 @@ import umc7th.bulk.group.entity.Group;
 import umc7th.bulk.group.repository.GroupRepository;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.repository.UserRepository;
+import umc7th.bulk.user.service.UserService;
 import umc7th.bulk.userEmoji.entity.UserEmoji;
 import umc7th.bulk.userEmoji.repository.UserEmojiRepository;
 
@@ -24,14 +25,14 @@ public class EmojiRecordServiceImpl implements EmojiRecordService {
     private final GroupRepository groupRepository;
     private final UserRepository userRepository;
     private final UserEmojiRepository userEmojiRepository;
+    private final UserService userService;
 
     @Transactional
     public EmojiRecordResponseDto createEmoji(Long groupId, EmojiRecordRequestDto requestDto) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
 
-        User sender = userRepository.findById(requestDto.getSenderUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid sender user ID"));
+        User sender = userService.getAuthenticatedUserInfo();
 
         User receiver = userRepository.findById(requestDto.getReceiverUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid receiver user ID"));

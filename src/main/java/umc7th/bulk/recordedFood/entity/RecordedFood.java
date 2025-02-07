@@ -27,4 +27,26 @@ public class RecordedFood {
     @Column(nullable = false)
     private int quantity; // 음식 섭취량 (gram)
 
+    @Column(nullable = false)
+    private Long calories;
+
+    @Column(nullable = false)
+    private Long carbos;
+
+    @Column(nullable = false)
+    private Long proteins;
+
+    @Column(nullable = false)
+    private Long fats;
+
+    public void updateNutrients(Long calories, Long carbos, Long proteins, Long fats) {
+        this.calories = calories;
+        this.carbos = carbos;
+        this.proteins = proteins;
+        this.fats = fats;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
+    }
 }
