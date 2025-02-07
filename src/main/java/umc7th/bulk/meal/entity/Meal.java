@@ -47,7 +47,7 @@ public class Meal extends BaseTimeEntity { // 식사 정보
     private String mealName;
 
     @Column(name = "price")
-    private Long price;
+    private Double price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "daily_meal_id")

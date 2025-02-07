@@ -16,12 +16,13 @@ public class MealPlanRequestDTO {
 
     @Getter
     public static class TargetNutritionDTO {
-        private int BMR;
-        private int TDEE;
-        private int target_calories;
-        private int carbs_target;
-        private int protein_target;
-        private int fat_target;
+
+        private Long target_calories;
+        private Long carbs_target;
+        private Long protein_target;
+        private Long fat_target;
+        private Long bmr;
+        private Long tdee;
     }
 
     @Getter
@@ -31,6 +32,7 @@ public class MealPlanRequestDTO {
         private Long carbos;
         private Long proteins;
         private Long fats;
+        private String unit;
 
         public MealItem toMealItemEntity(MealItemDTO dto) {
             return MealItem.builder()
@@ -39,6 +41,7 @@ public class MealPlanRequestDTO {
                     .carbos(dto.getCarbos())
                     .proteins(dto.getProteins())
                     .fats(dto.getFats())
+                    .unit(dto.getUnit())
                     .build();
         }
     }
@@ -48,23 +51,24 @@ public class MealPlanRequestDTO {
         private MealType mealType;
         private String mealName;
         private List<MealItemDTO> mealItems;
-        private Long price;
+        private Double price;
 
-        public  Meal toMealEntity(MealDTO mealDTO, DailyMeal dailyMeal) {
+        public Meal toMealEntity(MealDTO mealDTO, DailyMeal dailyMeal) {
 
-            List<MealMealItemMapping> mappings = mealDTO.getMealItems().stream()
-                    .map(mealItemDTO -> MealMealItemMapping.builder()
-                            .mealItem(mealItemDTO.toMealItemEntity(mealItemDTO))
-                            .build())
-                    .toList();
+//            List<MealMealItemMapping> mappings = mealDTO.getMealItems().stream()
+//                    .map(mealItemDTO -> MealMealItemMapping.builder()
+//                            .mealItem(mealItemDTO.toMealItemEntity(mealItemDTO))
+//                            .build())
+//                    .toList();
 
             return Meal.builder()
                     .type(mealDTO.getMealType())
                     .mealName(mealDTO.getMealName())
                     .mealCalories(mealDTO.getMealItems().stream().mapToLong(MealItemDTO::getCalories).sum())
                     .price(mealDTO.getPrice())
-                    .mealMealItemMappings(mappings)
+//                    .mealMealItemMappings(mappings)
                     .dailyMeal(dailyMeal)
+                    .localDate(dailyMeal.getDate())
                     .build();
         }
     }
@@ -94,8 +98,8 @@ public class MealPlanRequestDTO {
         public MealPlan toMealPlanEntity(MealPlanDTO dto, User user) {
 
             return MealPlan.builder()
-                    .start_date(dto.startDate)
-                    .end_date(dto.endDate)
+                    .startDate(dto.startDate)
+                    .endDate(dto.endDate)
                     .user(user)
                     .build();
         }
