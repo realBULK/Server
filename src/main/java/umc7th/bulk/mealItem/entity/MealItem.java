@@ -41,15 +41,21 @@ public class MealItem { // 각 식사별 음식 정보
     private String unit;
 
     @Column(name = "grade")
-    private Double grade; // 음식 평점
+    private Double grade = 0.0; // 음식 평점
 
     @Column(name = "grade_people")
-    private Long gradePeopleNum; // 평점 인원
+    private Long gradePeopleNum = 0L; // 평점 인원
 
     @OneToMany(mappedBy = "mealItem", cascade = CascadeType.ALL)
     @Builder.Default
     private List<MealMealItemMapping> mealMealItemMappings = new ArrayList<>();
 
+
+    // 후기 개수, 평균 평점 업데이트 메서드
+    public void updateReviewStats(Long reviewCount, Double averageRate) {
+        this.gradePeopleNum = reviewCount;
+        this.grade = averageRate;
+    }
 
 }
 
