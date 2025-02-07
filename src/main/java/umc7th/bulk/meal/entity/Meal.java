@@ -43,6 +43,12 @@ public class Meal extends BaseTimeEntity { // 식사 정보
     @Column(name = "day")
     private LocalDate localDate;
 
+    @Column(name = "meal_name")
+    private String mealName;
+
+    @Column(name = "price")
+    private Double price;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "daily_meal_id")
     private DailyMeal dailyMeal;

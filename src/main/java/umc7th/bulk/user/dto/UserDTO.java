@@ -38,10 +38,10 @@ public class UserDTO {
             curProteins = user.getCurProteins();
             curCarbos = user.getCurCarbos();
 
-            calories = user.getTarget_calories();
-            fats = user.getTarget_fats();
-            proteins = user.getTarget_proteins();
-            carbos = user.getTarget_carbos();
+            calories = user.getTargetCalories();
+            fats = user.getTargetFats();
+            proteins = user.getTargetProteins();
+            carbos = user.getTargetCarbos();
         }
 
     }

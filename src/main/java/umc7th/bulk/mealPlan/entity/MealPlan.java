@@ -24,10 +24,10 @@ public class MealPlan extends BaseTimeEntity {
     private Long id;
 
     @Column(name = "start_date")
-    private LocalDate start_date; // 식단 시작일
+    private LocalDate startDate; // 식단 시작일
 
     @Column(name = "end_date")
-    private LocalDate end_date; // 식단 종료일
+    private LocalDate endDate; // 식단 종료일
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

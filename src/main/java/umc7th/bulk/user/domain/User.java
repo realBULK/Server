@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.global.BaseTimeEntity;
 import umc7th.bulk.group.entity.Group;
+import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
 
 @Entity
 @Table(name = "user")
@@ -76,16 +77,16 @@ public class User extends BaseTimeEntity {
     private String refreshToken;
 
     @Column(name = "target_calories")
-    private Long target_calories;
+    private Long targetCalories;
 
     @Column(name = "target_fats")
-    private Long target_fats;
+    private Long targetFats;
 
     @Column(name = "target_proteins")
-    private Long target_proteins;
+    private Long targetProteins;
 
     @Column(name = "target_carbos")
-    private Long target_carbos;
+    private Long targetCarbos;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true)
@@ -107,11 +108,11 @@ public class User extends BaseTimeEntity {
     @Column(name = "cur_carbos")
     private Long curCarbos;
 
-    @Column(name = "BMR", nullable = false)
-    private Long bmr;
+    @Column(name = "BMR")
+    private Long BMR;
 
-    @Column(name = "TDEE", nullable = false)
-    private Long tdee;
+    @Column(name = "TDEE")
+    private Long TDEE;
 
     public void update(String nickname, Double height, Double weight, Double goalWeight, String activityLevel, String mealNumber, String cookTime,
                        String deliveryNum, String mealTime, String eatingOut, String favoriteFood) {
@@ -129,14 +130,23 @@ public class User extends BaseTimeEntity {
     }
 
     public void reportUpdate(Long calories, Long carbos, Long proteins, Long fats) {
-        this.target_calories = calories;
-        this.target_carbos = carbos;
-        this.target_proteins = proteins;
-        this.target_fats = fats;
+        this.targetCalories = calories;
+        this.targetCarbos = carbos;
+        this.targetProteins = proteins;
+        this.targetFats = fats;
     }
 
     public void updateTokens(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+    }
+
+    public void updateGoalNutrition(MealPlanRequestDTO.TargetNutritionDTO targetNutritionDTO) {
+        this.targetCalories = targetNutritionDTO.getTarget_calories();
+        this.targetCarbos = targetNutritionDTO.getCarbs_target();
+        this.targetProteins = targetNutritionDTO.getProtein_target();
+        this.targetFats = targetNutritionDTO.getFat_target();
+        this.BMR = targetNutritionDTO.getBmr();
+        this.TDEE = targetNutritionDTO.getTdee();
     }
 }
