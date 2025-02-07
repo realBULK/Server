@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc7th.bulk.dailyMeal.service.command.DailyMealCommandService;
-import umc7th.bulk.meal.service.command.MealCommandService;
-import umc7th.bulk.mealItem.service.command.MealItemCommandService;
 import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
 import umc7th.bulk.mealPlan.entity.MealPlan;
 import umc7th.bulk.mealPlan.repository.MealPlanRepository;
@@ -31,10 +29,12 @@ public class MealPlanCommandServiceImpl implements MealPlanCommandService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         MealPlan mealPlan = mealPlanRepository.save(dto.toMealPlanEntity(dto, user));
 
+        user.updateGoalNutrition(dto.getNutrition_goals());
+
         List<MealPlanRequestDTO.DailyMealDTO> dailyMealDTOList = dto.getDailyMeals();
 
         dailyMealDTOList.forEach(dailyMealDTO ->
-                dailyMealCommandService.createDailyMeal(mealPlan.getId(), dailyMealDTO));
+                dailyMealCommandService.createDailyMeal(mealPlan, dailyMealDTO));
 
         return mealPlan;
     }

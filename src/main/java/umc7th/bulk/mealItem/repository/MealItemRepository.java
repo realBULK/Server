@@ -26,6 +26,11 @@ public interface MealItemRepository extends JpaRepository<MealItem, Long> {
             @Param("cursorId") Long cursorId,
             Pageable pageable);
 
+//    @Query("SELECT mi FROM MealItem mi WHERE mi.name = :name")
     Optional<MealItem> findByName(String name);
+
+    Boolean existsByName(String name);
+
+    void deleteLastByName(String name);
 
 }

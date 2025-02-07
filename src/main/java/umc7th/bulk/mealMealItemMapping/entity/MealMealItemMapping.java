@@ -14,14 +14,14 @@ public class MealMealItemMapping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "meal_mealItem_mapping_id")
+    @Column(nullable = false, name = "meal_mealItem_mapping_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meal_id")
     private Meal meal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "meal_item_id")
     private MealItem mealItem;
 

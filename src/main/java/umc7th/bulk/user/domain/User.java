@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.global.BaseTimeEntity;
 import umc7th.bulk.group.entity.Group;
+import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
 
 @Entity
 @Table(name = "user")
@@ -107,10 +108,10 @@ public class User extends BaseTimeEntity {
     @Column(name = "cur_carbos")
     private Long curCarbos;
 
-    @Column(name = "BMR", nullable = true)
+    @Column(name = "BMR")
     private Long BMR;
 
-    @Column(name = "TDEE", nullable = true)
+    @Column(name = "TDEE")
     private Long TDEE;
 
     public void update(String nickname, Double height, Double weight, Double goalWeight, String activityLevel, String mealNumber, String cookTime,
@@ -138,5 +139,14 @@ public class User extends BaseTimeEntity {
     public void updateTokens(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+    }
+
+    public void updateGoalNutrition(MealPlanRequestDTO.TargetNutritionDTO targetNutritionDTO) {
+        this.targetCalories = targetNutritionDTO.getTarget_calories();
+        this.targetCarbos = targetNutritionDTO.getCarbs_target();
+        this.targetProteins = targetNutritionDTO.getProtein_target();
+        this.targetFats = targetNutritionDTO.getFat_target();
+        this.BMR = targetNutritionDTO.getBmr();
+        this.TDEE = targetNutritionDTO.getTdee();
     }
 }
