@@ -15,6 +15,7 @@ import umc7th.bulk.mealPlan.dto.MealPlanResponseDTO;
 import umc7th.bulk.mealPlan.entity.MealPlan;
 import umc7th.bulk.mealPlan.service.command.MealPlanCommandService;
 import umc7th.bulk.mealPlan.service.query.MealPlanQueryService;
+import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.service.UserService;
 
 @RestController
@@ -34,20 +35,21 @@ public class MealPlanController {
     @GetMapping("/mealPlanId")
     @Operation(summary = "유저의 일주일 식단 전체 조회 API")
     public CustomResponse<?> getMealWeekPlan(
-            @RequestParam Long userId,
             @RequestParam Long mealPlanId) {
 
-        MealPlan mealPlan = mealPlanQueryService.getMealPlan(userId, mealPlanId);
-        return CustomResponse.onSuccess(GeneralSuccessCode.OK, MealPlanResponseDTO.MealPlanGetResponseDTO.from(userId, mealPlan));
+        User user = userService.getAuthenticatedUserInfo();
+
+        MealPlan mealPlan = mealPlanQueryService.getMealPlan(user.getId(), mealPlanId);
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, MealPlanResponseDTO.MealPlanGetResponseDTO.from(user.getId(), mealPlan));
     }
 
     @PostMapping("/")
     @Operation(summary = "유저의 일주일 식단 정보 생성 API")
     public CustomResponse<?> createUserMealPlan(
-            @RequestParam Long userId,
             @RequestBody MealPlanRequestDTO.MealPlanDTO mealPlanRequestDTO
     ) {
-        mealPlanCommandService.createMealPlanDTO(mealPlanRequestDTO, userId);
+        User user = userService.getAuthenticatedUserInfo(); //로그인된 유저의 정보 가져오기
+        mealPlanCommandService.createMealPlanDTO(mealPlanRequestDTO, user.getId());
 
 
         return CustomResponse.onSuccess(GeneralSuccessCode.OK);

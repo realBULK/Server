@@ -61,7 +61,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             // 기존 사용자라면 토큰 정보 업데이트
             userService.updateTokens(kakaoId, accessToken, refreshToken);
 
-            response.sendRedirect("/home");
+            response.sendRedirect("/home/info");
         }
 
         // SecurityContext에 인증 정보 설정 (기존,신규 사용자 둘 다)
