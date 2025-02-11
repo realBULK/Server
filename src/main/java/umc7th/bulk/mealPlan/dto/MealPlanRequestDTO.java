@@ -87,8 +87,21 @@ public class MealPlanRequestDTO {
             return DailyMeal.builder()
                     .date(dto.getDate())
                     .mealPlan(mealPlan)
+                    .dailyCalories(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getCalories).sum())
+                            .sum())
+                    .dailyCarbos(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getCarbs).sum())
+                            .sum())
+                    .dailyProteins(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getProtein).sum())
+                            .sum())
+                    .dailyFats(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getFat).sum())
+                            .sum())
                     .build();
         }
+
     }
 
     @Getter

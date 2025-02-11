@@ -24,8 +24,7 @@ public class MealPlanQueryServiceImpl implements MealPlanQueryService {
     public MealPlan getMealPlan(Long userId, Long mealPlanId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        mealPlanRepository.findById(mealPlanId).orElseThrow(() -> new MealPlanException(MealPlanErrorCode.MEAL_PLAN_NOT_FOUND));
-        return mealPlanRepository.findByUserId(userId);
+        return mealPlanRepository.findById(mealPlanId).orElseThrow(() -> new MealPlanException(MealPlanErrorCode.MEAL_PLAN_NOT_FOUND));
 
     }
 }
