@@ -29,18 +29,18 @@ public class MealPlanRequestDTO {
     public static class MealItemDTO {
         private String name;
         private Long calories;
-        private Long carbos;
-        private Long proteins;
-        private Long fats;
+        private Long carbs;
+        private Long protein;
+        private Long fat;
         private String unit;
 
         public MealItem toMealItemEntity(MealItemDTO dto) {
             return MealItem.builder()
                     .name(dto.getName())
                     .calories(dto.getCalories())
-                    .carbos(dto.getCarbos())
-                    .proteins(dto.getProteins())
-                    .fats(dto.getFats())
+                    .carbos(dto.getCarbs())
+                    .proteins(dto.getProtein())
+                    .fats(dto.getFat())
                     .unit(dto.getUnit())
                     .build();
         }
@@ -65,6 +65,9 @@ public class MealPlanRequestDTO {
                     .type(mealDTO.getMealType())
                     .mealName(mealDTO.getMealName())
                     .mealCalories(mealDTO.getMealItems().stream().mapToLong(MealItemDTO::getCalories).sum())
+                    .mealCarbos(mealDTO.getMealItems().stream().mapToLong(MealItemDTO::getCarbs).sum())
+                    .mealProteins(mealDTO.getMealItems().stream().mapToLong(MealItemDTO::getProtein).sum())
+                    .mealFats(mealDTO.getMealItems().stream().mapToLong(MealItemDTO::getFat).sum())
                     .price(mealDTO.getPrice())
 //                    .mealMealItemMappings(mappings)
                     .dailyMeal(dailyMeal)
@@ -84,8 +87,21 @@ public class MealPlanRequestDTO {
             return DailyMeal.builder()
                     .date(dto.getDate())
                     .mealPlan(mealPlan)
+                    .dailyCalories(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getCalories).sum())
+                            .sum())
+                    .dailyCarbos(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getCarbs).sum())
+                            .sum())
+                    .dailyProteins(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getProtein).sum())
+                            .sum())
+                    .dailyFats(dto.getMeals().stream()
+                            .mapToLong(meal -> meal.getMealItems().stream().mapToLong(MealItemDTO::getFat).sum())
+                            .sum())
                     .build();
         }
+
     }
 
     @Getter
