@@ -30,7 +30,7 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "meal_item_id", nullable = false)
     private MealItem mealItem; // 음식
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false)
     private User writer; // 작성자
 
