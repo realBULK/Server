@@ -15,7 +15,7 @@ import umc7th.bulk.user.service.UserQuestionService;
 import umc7th.bulk.user.service.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Tag(name = "회원가입 관련 컨트롤러")
 public class UserController {
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/question/report")
-    @Operation(summary = "저장된 레포트 값 조회 API", description = "저장된 칼로리, 탄단지 섭취권장량을 조회")
+    @Operation(summary = "저장된 레포트 값 조회 API", description = "현재&목표 몸무게, 저장된 칼로리, 탄단지 섭취권장량을 조회 - 로그인 후 균형 잡힌 식단 페이지에 사용")
     public CustomResponse<?> getReport() {
         User user = userService.getAuthenticatedUserInfo(); //로그인된 유저의 정보 가져오기
         User getReportUser = userQuestionService.getUserReport(user.getId());
@@ -61,6 +61,7 @@ public class UserController {
     }
 
     @GetMapping("/test")
+    @Operation(summary = "현재 인증(로그인)된 유저id 조회 API", description = "일단 테스트용으로 두고 추후에 주석처리할 예정입니다.")
     public String getCurrentUser() {
         User user = userService.getAuthenticatedUserInfo();
         return "Hello, " + user.getId();
