@@ -26,14 +26,10 @@ public class DailyMealDTO {
             meals = dailyMeal.getMeals().stream()
                     .map(meal -> new MealDTO.MealInfoDTO(meal))
                     .collect(Collectors.toList());
-            dailyCalories = dailyMeal.getMeals().stream()
-                    .mapToLong(mealCalories -> mealCalories.getMealCalories()).sum();
-            dailyCarbos = dailyMeal.getMeals().stream()
-                    .mapToLong(mealCarbos -> mealCarbos.getMealCarbos()).sum();
-            dailyProteins = dailyMeal.getMeals().stream()
-                    .mapToLong(mealProteins -> mealProteins.getMealProteins()).sum();
-            dailyFats = dailyMeal.getMeals().stream()
-                    .mapToLong(mealFats -> mealFats.getMealFats()).sum();
+            dailyCalories = dailyMeal.getDailyCalories();
+            dailyCarbos = dailyMeal.getDailyCarbos();
+            dailyProteins = dailyMeal.getDailyProteins();
+            dailyFats = dailyMeal.getDailyFats();
         }
     }
 }
