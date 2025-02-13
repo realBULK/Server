@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc7th.bulk.meal.entity.MealType;
+import umc7th.bulk.mealItem.entity.MealItem;
 import umc7th.bulk.mealMealItemMapping.entity.MealMealItemMapping;
 import umc7th.bulk.mealMealItemMapping.repository.MealMealItemMappingRepository;
 import umc7th.bulk.record.dto.RecordRequestDto;
@@ -94,6 +95,14 @@ public class RecordServiceImpl implements RecordService {
 
         recordedFoodRepository.saveAll(recordedFoods);
 
+        // 기록한 식품의 count 증가
+        recordedFoods.forEach(
+                food -> {
+                    MealItem mealItem = food.getFoodId();
+                    mealItem.increaseRecordFoodCount();
+                }
+        );
+
         // 영양소 합산
         Long totalCalories = recordedFoods.stream().mapToLong(RecordedFood::getCalories).sum();
         Long totalCarbs = recordedFoods.stream().mapToLong(RecordedFood::getCarbos).sum();
@@ -103,6 +112,7 @@ public class RecordServiceImpl implements RecordService {
         // Record에 영양소 값 업데이트
         savedRecord.updateNutrients(totalCalories, totalCarbs, totalProtein, totalFat);
         recordRepository.save(savedRecord);
+
 
         // Response 생성
         return RecordResponseDto.builder()

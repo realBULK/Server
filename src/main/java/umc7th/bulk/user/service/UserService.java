@@ -59,6 +59,10 @@ public class UserService {
                 .refreshToken(refreshToken)
                 .recordComplete(false)//로그인이 먼저 되면 이부분이 우선적으로 저장되는데, recordComplete도 false로 같이 저장하는게 좋을것같아요,,
                 .bulkCharacter(bulkCharacter)
+                .curCalories(0L)
+                .curCarbos(0L)
+                .curProteins(0L)
+                .curFats(0L)
                 .build();
 
         return userRepository.save(user);

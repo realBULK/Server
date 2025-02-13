@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import umc7th.bulk.meal.entity.MealType;
 import umc7th.bulk.mealItem.entity.MealItem;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MealItemRepository extends JpaRepository<MealItem, Long> {
@@ -37,6 +38,10 @@ public interface MealItemRepository extends JpaRepository<MealItem, Long> {
 
     // 음식 이름으로 조회
     Optional<MealItem> findByName(String name);
+
+    // 상위 5개 음식 조회
+    @Query("SELECT mi FROM MealItem mi ORDER BY mi.recordCount DESC")
+    List<MealItem> findTop5MealItemByRecordCount(Pageable pageable);
 
 
 
