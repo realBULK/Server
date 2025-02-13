@@ -8,4 +8,6 @@ import java.util.List;
 public interface MealItemService {
     List<MealItemDTO.MealItemPreviewDTO> getMealItems(Long cursor);
     List<MealItemDTO.MealItemPreviewDTO> searchMealItems(String keyword, Long cursor);
+
+    List<MealItemDTO.MealItemPopularityDTO> getPopularityMealItems();
 }

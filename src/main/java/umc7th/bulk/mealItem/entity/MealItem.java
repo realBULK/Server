@@ -41,10 +41,16 @@ public class MealItem { // 각 식사별 음식 정보
     private String unit;
 
     @Column(name = "grade")
+    @Builder.Default
     private Double grade = 0.0; // 음식 평점
 
-    @Column(name = "grade_people")
+    @Column(name = "grade_people_num")
+    @Builder.Default
     private Long gradePeopleNum = 0L; // 평점 인원
+
+    @Column(name = "record_count")
+    @Builder.Default
+    private Long recordCount = 0L; // 음식을 기록한 인원 수
 
     @OneToMany(mappedBy = "mealItem", cascade = CascadeType.ALL)
     @Builder.Default
@@ -55,6 +61,10 @@ public class MealItem { // 각 식사별 음식 정보
     public void updateReviewStats(Long reviewCount, Double averageRate) {
         this.gradePeopleNum = reviewCount;
         this.grade = averageRate;
+    }
+
+    public void increaseRecordFoodCount() {
+        recordCount++;
     }
 
 }

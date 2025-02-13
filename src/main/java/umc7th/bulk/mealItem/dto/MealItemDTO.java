@@ -41,4 +41,21 @@ public class MealItemDTO {
             gram = mealItem.getGram();
         }
     }
+
+    @Getter
+    public static class MealItemPopularityDTO {
+        private int rank;
+        private String name;
+        private String unit;
+        private Long gradePeopleNum;
+        private Double grade;
+
+        public MealItemPopularityDTO(MealItem mealItem, int rank) {
+            this.rank = rank;
+            name = mealItem.getName();
+            unit = mealItem.getUnit();
+            gradePeopleNum = mealItem.getGradePeopleNum();
+            grade = mealItem.getGrade();
+        }
+    }
 }
