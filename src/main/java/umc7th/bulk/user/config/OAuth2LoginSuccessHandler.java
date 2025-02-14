@@ -56,7 +56,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             // 새로운 사용자라면 사용자 저장
             userService.saveUser(kakaoId, email, gender, birthyear, accessToken, refreshToken);
 
-            response.sendRedirect("/welcome");
+            response.sendRedirect("http://localhost:3000/report");
         } else {
             // 기존 사용자라면 토큰 정보 업데이트
             userService.updateTokens(kakaoId, accessToken, refreshToken);
