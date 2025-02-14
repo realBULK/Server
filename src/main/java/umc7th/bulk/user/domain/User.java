@@ -108,10 +108,10 @@ public class User extends BaseTimeEntity {
     @Column(name = "cur_carbos")
     private Long curCarbos;
 
-    @Column(name = "BMR")
+    @Column(name = "BMR", nullable = true)
     private Long BMR;
 
-    @Column(name = "TDEE")
+    @Column(name = "TDEE" , nullable = true)
     private Long TDEE;
 
     public void update(String nickname, Double height, Double weight, Double goalWeight, String activityLevel, String mealNumber, String cookTime,
