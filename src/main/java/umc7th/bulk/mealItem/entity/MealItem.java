@@ -52,7 +52,7 @@ public class MealItem { // 각 식사별 음식 정보
     @Builder.Default
     private Long recordCount = 0L; // 음식을 기록한 인원 수
 
-    @OneToMany(mappedBy = "mealItem", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "mealItem")
     @Builder.Default
     private List<MealMealItemMapping> mealMealItemMappings = new ArrayList<>();
 
