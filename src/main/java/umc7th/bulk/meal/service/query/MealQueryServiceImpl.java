@@ -17,7 +17,6 @@ import umc7th.bulk.meal.entity.MealType;
 import umc7th.bulk.meal.exception.MealErrorCode;
 import umc7th.bulk.meal.exception.MealErrorException;
 import umc7th.bulk.mealItem.dto.MealItemDTO;
-import umc7th.bulk.mealItem.entity.MealItem;
 import umc7th.bulk.mealMealItemMapping.entity.MealMealItemMapping;
 import umc7th.bulk.mealMealItemMapping.repository.MealMealItemMappingRepository;
 
@@ -49,15 +48,15 @@ public class MealQueryServiceImpl implements MealQueryService{
 
         // MealMealItemMapping 통해 MealItem 가져오기
         List<MealMealItemMapping> mealItemMappings = mappingRepository.findByMealId(meal.getId());
-        List<MealItem> mealItems = mealItemMappings.stream()
-                .map(mealMealItemMapping -> mealMealItemMapping.getMealItem())
-                .toList();
+//        List<MealItem> mealItems = mealItemMappings.stream()
+//                .map(mealMealItemMapping -> mealMealItemMapping.getMealItem())
+//                .toList();
         
         // 칼로리, 탄단지 계산
-        Long mealCalories = mealItems.stream().mapToLong(MealItem::getCalories).sum();
-        Long mealCarbos = mealItems.stream().mapToLong(MealItem::getCarbos).sum();
-        Long mealProteins = mealItems.stream().mapToLong(MealItem::getProteins).sum();
-        Long mealFats = mealItems.stream().mapToLong(MealItem::getFats).sum();
+        Long mealCalories = meal.getMealCalories();
+        Long mealCarbos = meal.getMealCarbos();
+        Long mealProteins = meal.getMealProteins();
+        Long mealFats = meal.getMealFats();
 
         // Meal 축소본
         LocalDate date = meal.getDailyMeal().getDate();
@@ -65,7 +64,7 @@ public class MealQueryServiceImpl implements MealQueryService{
 
         // Meal의 음식 목록 - 페이지네이션 필요
         Pageable pageable = PageRequest.of(0, pagSize);
-        Slice<MealMealItemMapping> mappingSlice = mappingRepository.findMealItemsByUserAndMealWithCursor(userId, type, cursorId, pageable);
+        Slice<MealMealItemMapping> mappingSlice = mappingRepository.findMealItemsByDailyMealAndMealTypeWithCursor(dailyMealId, type, cursorId, pageable);
 
         List<MealItemDTO.MealItemPreviewDTO> items = mappingSlice.getContent().stream()
                 .map(mapping -> new MealItemDTO.MealItemPreviewDTO(mapping.getMealItem()))

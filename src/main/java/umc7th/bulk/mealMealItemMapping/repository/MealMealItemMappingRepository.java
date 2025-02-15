@@ -17,12 +17,12 @@ public interface MealMealItemMappingRepository extends JpaRepository<MealMealIte
     List<MealMealItemMapping> findByMealId(Long mealId);
 
     @Query("SELECT mmim FROM MealMealItemMapping mmim " +
-            "WHERE mmim.meal.dailyMeal.mealPlan.user.id = :userId " +
+            "WHERE mmim.meal.dailyMeal.id = :dailyMealId " +
             "AND mmim.meal.type = :type " +
-            "AND (:cursorId IS NULL OR :cursorId = 0 OR mmim.mealItem.id >= :cursorId) " +
+            "AND (:cursorId IS NULL OR :cursorId = 0 OR mmim.mealItem.id > :cursorId) " +
             "ORDER BY mmim.mealItem.id ASC ")
-    Slice<MealMealItemMapping> findMealItemsByUserAndMealWithCursor(
-            @Param("userId") Long userId,
+    Slice<MealMealItemMapping> findMealItemsByDailyMealAndMealTypeWithCursor(
+            @Param("dailyMealId") Long dailyMealId,
             @Param("type") MealType type,
             @Param("cursorId") Long cursorId,
             Pageable pageable
