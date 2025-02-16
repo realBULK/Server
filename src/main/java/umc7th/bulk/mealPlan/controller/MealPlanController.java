@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import umc7th.bulk.dailyMeal.service.command.DailyMealCommandService;
+import umc7th.bulk.dailyMeal.service.command.DailyMealService;
 import umc7th.bulk.global.apiPayload.CustomResponse;
 import umc7th.bulk.global.success.GeneralSuccessCode;
 import umc7th.bulk.meal.service.command.MealCommandService;
@@ -26,7 +26,7 @@ public class MealPlanController {
 
     private final MealPlanQueryService mealPlanQueryService;
     private final MealPlanCommandService mealPlanCommandService;
-    private final DailyMealCommandService dailyMealCommandService;
+    private final DailyMealService dailyMealService;
     private final MealCommandService mealCommandService;
     private final MealMealItemMappingCommandService mealMealItemMappingCommandService;
     private final MealItemCommandService mealItemCommandService;

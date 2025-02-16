@@ -2,7 +2,10 @@ package umc7th.bulk.dailyMeal.service.command;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import umc7th.bulk.dailyMeal.dto.DailyMealResponseDTO;
 import umc7th.bulk.dailyMeal.entity.DailyMeal;
+import umc7th.bulk.dailyMeal.exception.DailyMealErrorCode;
+import umc7th.bulk.dailyMeal.exception.DailyMealException;
 import umc7th.bulk.dailyMeal.repository.DailyMealRepository;
 import umc7th.bulk.meal.service.command.MealCommandService;
 import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
@@ -13,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DailyMealCommandServiceImpl implements DailyMealCommandService{
+public class DailyMealServiceImpl implements DailyMealService {
 
     private final DailyMealRepository dailyMealRepository;
     private final MealCommandService mealCommandService;
@@ -32,5 +35,14 @@ public class DailyMealCommandServiceImpl implements DailyMealCommandService{
         mealDTOList.forEach(mealDTO -> mealCommandService.createMeal(dailyMeal, mealDTO));
 
         return dailyMeal;
+    }
+
+    @Override
+    public DailyMealResponseDTO.DailyMealGetResponseDTO getDailyMeal(Long dailyMealId) {
+
+        DailyMeal dailyMeal = dailyMealRepository.findById(dailyMealId).orElseThrow(() ->
+                new DailyMealException(DailyMealErrorCode.NOT_FOUND));
+
+        return DailyMealResponseDTO.DailyMealGetResponseDTO.from(dailyMeal);
     }
 }

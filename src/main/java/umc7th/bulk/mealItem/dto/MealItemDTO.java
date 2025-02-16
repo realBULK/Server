@@ -6,11 +6,11 @@ import umc7th.bulk.mealItem.entity.MealItem;
 public class MealItemDTO {
 
     @Getter
-    public static class MealItemInfoDTO {
+    public static class MealItemNameDTO {
 
         private String name;
 
-        public MealItemInfoDTO(MealItem mealItem) {
+        public MealItemNameDTO(MealItem mealItem) {
             name = mealItem.getName();
         }
     }

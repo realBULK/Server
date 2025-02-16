@@ -16,7 +16,7 @@ public class MealDTO {
     @Getter
     public static class MealInfoDTO {
         private MealType type;
-        private List<MealItemDTO.MealItemInfoDTO> mealItems;
+        private List<MealItemDTO.MealItemNameDTO> mealItems;
         private Long mealCalories;
         private Long mealCarbos;
         private Long mealProteins;
@@ -31,7 +31,7 @@ public class MealDTO {
                     .toList();
             
             mealItems = mealItemList.stream()
-                    .map(MealItemDTO.MealItemInfoDTO::new)
+                    .map(MealItemDTO.MealItemNameDTO::new)
                     .collect(Collectors.toList());
 
             mealCalories = mealItemList.stream()
@@ -65,6 +65,31 @@ public class MealDTO {
             this.mealCarbos = mealCarbos;
             this.mealProteins = mealProteins;
             this.mealFats = mealFats;
+        }
+    }
+
+    @Getter
+    public static class MealNutritionDTO {
+        private MealType mealType;
+        private Long mealCalories;
+        private Long mealCarbos;
+        private Long mealProteins;
+        private Long mealFats;
+        private List<MealItemDTO.MealItemNameDTO> mealItemNames;
+
+        public MealNutritionDTO(Meal meal) {
+            mealType = meal.getType();
+            mealCalories = meal.getMealCalories();
+            mealCarbos = meal.getMealCarbos();
+            mealProteins = meal.getMealProteins();
+            mealFats = meal.getMealFats();
+            List<MealItem> mealItemList = meal.getMealMealItemMappings().stream()
+                    .map(MealMealItemMapping::getMealItem)
+                    .toList();
+
+            mealItemNames = mealItemList.stream()
+                    .map(MealItemDTO.MealItemNameDTO::new)
+                    .toList();
         }
     }
 }
