@@ -24,12 +24,14 @@ public class UserEmojiServiceImpl implements UserEmojiService {
     private final EmojiRecordRepository emojiRecordRepository;
 
     @Transactional(readOnly = true)
-    public int countEmojisByUser(Long groupId, Long receiverUserId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
-
+    public int countEmojisByUser(Long receiverUserId) {
         User receiver = userRepository.findById(receiverUserId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
+        Long groupId = receiver.getGroup().getGroupId();
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
 
         // 해당 그룹에서 생성된 모든 EmojiRecord 조회
         List<Long> emojiRecordIds = emojiRecordRepository.findByGroup(group)

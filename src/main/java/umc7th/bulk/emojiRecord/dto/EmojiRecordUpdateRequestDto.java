@@ -7,11 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Schema(description = "이모지 입력 요청 DTO")
-public class EmojiRecordRequestDto {
-
-    @Schema(description = "이모지를 받는 사용자 ID", example = "3")
-    private Long receiverUserId;
-
+public class EmojiRecordUpdateRequestDto {
     @Schema(description = "이모지 유형 ('heart' 또는 'special')", example = "special")
     private String emojiType;
 }

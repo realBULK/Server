@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc7th.bulk.emojiRecord.dto.EmojiRecordRequestDto;
 import umc7th.bulk.emojiRecord.dto.EmojiRecordResponseDto;
+import umc7th.bulk.emojiRecord.dto.EmojiRecordUpdateRequestDto;
 import umc7th.bulk.emojiRecord.entity.EmojiRecord;
 import umc7th.bulk.emojiRecord.repository.EmojiRecordRepository;
 import umc7th.bulk.group.entity.Group;
@@ -28,11 +29,14 @@ public class EmojiRecordServiceImpl implements EmojiRecordService {
     private final UserService userService;
 
     @Transactional
-    public EmojiRecordResponseDto createEmoji(Long groupId, EmojiRecordRequestDto requestDto) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
+    public EmojiRecordResponseDto createEmoji(EmojiRecordRequestDto requestDto) {
 
         User sender = userService.getAuthenticatedUserInfo();
+
+        Long groupId = sender.getGroup().getGroupId();
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid group ID"));
 
         User receiver = userRepository.findById(requestDto.getReceiverUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid receiver user ID"));
@@ -59,7 +63,7 @@ public class EmojiRecordServiceImpl implements EmojiRecordService {
     }
 
     @Transactional
-    public EmojiRecordResponseDto updateEmoji(Long groupId, Long emojiId, EmojiRecordRequestDto requestDto) {
+    public EmojiRecordResponseDto updateEmoji(Long emojiId, EmojiRecordUpdateRequestDto requestDto) {
         EmojiRecord emojiRecord = emojiRecordRepository.findById(emojiId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid emoji ID"));
 
@@ -72,7 +76,7 @@ public class EmojiRecordServiceImpl implements EmojiRecordService {
     }
 
     @Transactional
-    public void deleteEmoji(Long groupId, Long emojiId) {
+    public void deleteEmoji(Long emojiId) {
         EmojiRecord emojiRecord = emojiRecordRepository.findById(emojiId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid emoji ID"));
         userEmojiRepository.deleteByEmojiRecord(emojiRecord);
