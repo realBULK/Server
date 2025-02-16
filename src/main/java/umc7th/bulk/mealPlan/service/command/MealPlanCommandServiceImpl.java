@@ -3,7 +3,7 @@ package umc7th.bulk.mealPlan.service.command;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import umc7th.bulk.dailyMeal.service.command.DailyMealCommandService;
+import umc7th.bulk.dailyMeal.service.command.DailyMealService;
 import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
 import umc7th.bulk.mealPlan.entity.MealPlan;
 import umc7th.bulk.mealPlan.repository.MealPlanRepository;
@@ -19,7 +19,7 @@ import java.util.List;
 public class MealPlanCommandServiceImpl implements MealPlanCommandService {
 
     private final MealPlanRepository mealPlanRepository;
-    private final DailyMealCommandService dailyMealCommandService;
+    private final DailyMealService dailyMealService;
     private final UserRepository userRepository;
 
     @Override
@@ -34,7 +34,7 @@ public class MealPlanCommandServiceImpl implements MealPlanCommandService {
         List<MealPlanRequestDTO.DailyMealDTO> dailyMealDTOList = dto.getDailyMeals();
 
         dailyMealDTOList.forEach(dailyMealDTO ->
-                dailyMealCommandService.createDailyMeal(mealPlan, dailyMealDTO));
+                dailyMealService.createDailyMeal(mealPlan, dailyMealDTO));
 
         return mealPlan;
     }
