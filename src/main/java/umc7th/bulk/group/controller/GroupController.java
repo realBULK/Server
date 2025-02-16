@@ -21,13 +21,13 @@ public class GroupController {
     private final GroupService groupService;
 
 
-    @GetMapping("/{groupId}/map")
-    public CustomResponse<GroupMapResponseDto> getGroupMap(@PathVariable Long groupId) {
-        return CustomResponse.onSuccess(GeneralSuccessCode.OK, groupService.getGroupMap(groupId));
+    @GetMapping("/map")
+    public CustomResponse<GroupMapResponseDto> getGroupMap() {
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, groupService.getGroupMap());
     }
 
-    @GetMapping("/{groupId}/today")
-    public ResponseEntity<CustomResponse<List<TodayMemberDto>>> getTodayMembers(@PathVariable Long groupId) {
-        return ResponseEntity.ok(CustomResponse.onSuccess(GeneralSuccessCode.OK, groupService.getTodayMembers(groupId)));
+    @GetMapping("/today")
+    public ResponseEntity<CustomResponse<List<TodayMemberDto>>> getTodayMembers() {
+        return ResponseEntity.ok(CustomResponse.onSuccess(GeneralSuccessCode.OK, groupService.getTodayMembers()));
     }
 }

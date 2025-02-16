@@ -10,6 +10,7 @@ import umc7th.bulk.group.dto.GroupMapResponseDto;
 import umc7th.bulk.group.dto.TodayMemberDto;
 import umc7th.bulk.group.entity.Group;
 import umc7th.bulk.group.repository.GroupRepository;
+import umc7th.bulk.user.service.UserService;
 import umc7th.bulk.userEmoji.repository.UserEmojiRepository;
 import umc7th.bulk.stageRecord.dto.StageInfoDto;
 import umc7th.bulk.stageRecord.entity.StageRecord;
@@ -29,8 +30,14 @@ public class GroupService {
     private final StageRecordRepository stageRecordRepository;
     private final UserRepository userRepository;
     private final UserEmojiRepository userEmojiRepository;
+    private final UserService userService;
 
-    public GroupMapResponseDto getGroupMap(Long groupId) {
+    public GroupMapResponseDto getGroupMap() {
+
+
+        User currentUser = userService.getAuthenticatedUserInfo();
+
+        Long groupId = currentUser.getGroup().getGroupId();
 
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.GROUP_NOT_FOUND_404));
@@ -52,7 +59,11 @@ public class GroupService {
                 .build();
     }
 
-    public List<TodayMemberDto> getTodayMembers(Long groupId) {
+    public List<TodayMemberDto> getTodayMembers() {
+
+        User currentUser = userService.getAuthenticatedUserInfo();
+        Long groupId = currentUser.getGroup().getGroupId();
+
         // 그룹 존재 여부 확인
         groupRepository.findById(groupId)
                 .orElseThrow(() -> new CustomException(GeneralErrorCode.GROUP_NOT_FOUND_404));
