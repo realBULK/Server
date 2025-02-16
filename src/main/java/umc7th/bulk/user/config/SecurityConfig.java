@@ -7,6 +7,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +24,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf(csrf -> csrf.disable());
+
+        // CORS 설정 추가
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -33,5 +41,19 @@ public class SecurityConfig {
         );
 
         return http.build();
+    }
+
+    // CORS 설정 메서드
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://bulkapp.site")); // 허용할 도메인
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
+        configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        configuration.setAllowCredentials(true); // 쿠키 포함 여부
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 적용
+        return source;
     }
 }
