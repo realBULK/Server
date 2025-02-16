@@ -17,7 +17,7 @@ import umc7th.bulk.global.success.GeneralSuccessCode;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/groups/{groupId}/emojis")
+@RequestMapping("/api/groups/emojis")
 public class EmojiRecordController {
 
     private final EmojiRecordService emojiRecordService;
