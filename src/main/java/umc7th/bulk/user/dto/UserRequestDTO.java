@@ -1,6 +1,9 @@
 package umc7th.bulk.user.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class UserRequestDTO {
 
@@ -26,5 +29,28 @@ public class UserRequestDTO {
         private Long proteins;
         private Long fats;
 
+    }
+
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserLoginDTO {
+
+        private String email;
+
+        private String password;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SignupDTO {
+
+        private String email;
+
+        private String password;
     }
 }

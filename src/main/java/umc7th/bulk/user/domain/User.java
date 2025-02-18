@@ -9,6 +9,7 @@ import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.global.BaseTimeEntity;
 import umc7th.bulk.group.entity.Group;
 import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
+import umc7th.bulk.user.enums.UserStatus;
 
 @Entity
 @Table(name = "user")
@@ -22,16 +23,23 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, name = "kakao_id")
+    @Column(nullable = true, unique = true, name = "kakao_id")
     private String kakaoId;
 
-    @Column(nullable = false, unique = true, name = "email")
-    private String email;
+    @Column(nullable = false, length = 50)
+    public String email;
 
-    @Column(nullable = false, name = "gender")
+    @Column(length = 100)
+    public String password; // 비밀번호는 nullable로 설정 (소셜 로그인 시 필요 없을 수 있음)
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(15)")
+    public UserStatus status;
+
+    @Column(nullable = true, name = "gender")
     private String gender;
 
-    @Column(nullable = false, name = "birth_year")
+    @Column(nullable = true, name = "birth_year")
     private String birthyear;
 
     @Column(nullable = true, name = "nickname")

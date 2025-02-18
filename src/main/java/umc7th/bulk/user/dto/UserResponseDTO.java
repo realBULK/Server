@@ -125,4 +125,25 @@ public class UserResponseDTO {
         }
     }
 
+    // 토큰 정보 응답
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserTokenDTO {
+        private String accessToken;
+        private String refreshToken;
+        private String redirectUrl;
+    }
+
+    // 회원 정보 응답 시 필요한 정보
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserInforDTO {
+        private String email;
+        private String nickname;
+    }
+
 }
