@@ -20,6 +20,9 @@ public class AuthController {
         System.out.println("code = " + code);
 
         KakaoTokenResponse tokenResponse = kakaoAuthService.requestKakaoToken(code);
+//
+//        // 카카오 사용자 정보 가져오기 (추가 구현 필요)
+//        String kakaoId = kakaoAuthService.getKakaoUserId(tokenResponse.getAccess_token());
 
         return ResponseEntity.ok(tokenResponse);
     }

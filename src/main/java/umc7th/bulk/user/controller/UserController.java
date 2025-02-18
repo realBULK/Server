@@ -115,7 +115,4 @@ public class UserController {
             return CustomResponse.fail(UserErrorCode.USER_NOT_FOUND);
         }
     }
-
-
-
 }
