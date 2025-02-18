@@ -39,4 +39,13 @@ public class MealItemController {
         List<MealItemDTO.MealItemPopularityDTO> popularityMealItems = mealItemService.getPopularityMealItems();
         return CustomResponse.onSuccess(GeneralSuccessCode.OK, popularityMealItems);
     }
+
+    // 검색 음식 상세 조회(바텀 팝업)
+    @GetMapping("/{mealItemId}")
+    @Operation(summary = "검색 음식 상세 조회(바텀 팝업 내용)", description = "검색한 음식의 탄단지 및 상세 내용 조회")
+    public CustomResponse<?> getSearchMealItemInfo(@PathVariable Long mealItemId) {
+        List<MealItemDTO.MealItemSearchInfoDTO> searchMealItemInfo = mealItemService.getSearchMealItemInfo(mealItemId);
+
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, searchMealItemInfo);
+    }
 }
