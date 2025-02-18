@@ -1,5 +1,6 @@
 package umc7th.bulk.user.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,4 +58,27 @@ public class KakaoAuthService {
         }
 
     }
+//
+//    public String getKakaoUserId(String accessToken) {
+//        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Authorization", "Bearer " + accessToken);
+//        headers.set("Content-Type", "application/x-www-form-urlencoded");
+//
+//        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+//        ResponseEntity<String> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, requestEntity, String.class);
+//
+//        if (response.getStatusCode() == HttpStatus.OK) {
+//            try {
+//                ObjectMapper objectMapper = new ObjectMapper();
+//                JsonNode root = objectMapper.readTree(response.getBody());
+//                return root.get("id").asText();
+//            } catch (Exception e) {
+//                throw new RuntimeException("❌ 카카오 사용자 ID 파싱 실패: " + e.getMessage());
+//            }
+//        } else {
+//            throw new RuntimeException("❌ 카카오 사용자 정보 요청 실패: " + response.getBody());
+//        }
+//    }
 }

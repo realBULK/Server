@@ -56,12 +56,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             // 새로운 사용자라면 사용자 저장
             userService.saveUser(kakaoId, email, gender, birthyear, accessToken, refreshToken);
 
-            response.sendRedirect("https://bulkapp.site/report");
+//            response.sendRedirect("https://bulkapp.site/report");
+            response.sendRedirect("http://localhost:3000/report");
         } else {
             // 기존 사용자라면 토큰 정보 업데이트
             userService.updateTokens(kakaoId, accessToken, refreshToken);
 
-            response.sendRedirect("https://bulkapp.site/home");
+//            response.sendRedirect("https://bulkapp.site/home");
+            response.sendRedirect("http://localhost:3000/home");
         }
 
         // SecurityContext에 인증 정보 설정 (기존,신규 사용자 둘 다)
