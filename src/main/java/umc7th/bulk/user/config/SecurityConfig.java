@@ -37,7 +37,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**", "/api/user/unlink", "/test/**", "/api/user/question/isDuplicated/**", "/api/user/token", "/api/auth/kakao/token").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**", "/api/user/unlink", "/test/**", "/api/user/question/isDuplicated/**", "/api/user/token", "/api/auth/kakao/**","/api/**").permitAll()
                 .anyRequest().authenticated()
         );
 
