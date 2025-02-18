@@ -43,6 +43,4 @@ public interface MealItemRepository extends JpaRepository<MealItem, Long> {
     @Query("SELECT mi FROM MealItem mi ORDER BY mi.recordCount DESC")
     List<MealItem> findTop5MealItemByRecordCount(Pageable pageable);
 
-
-
 }

@@ -58,4 +58,23 @@ public class MealItemDTO {
             grade = mealItem.getGrade();
         }
     }
+
+    @Getter
+    public static class MealItemSearchInfoDTO {
+        private String name;
+        private Long carbos;
+        private Long proteins;
+        private Long fats;
+        private String unit;
+        private Long gram;
+
+        public MealItemSearchInfoDTO(MealItem mealItem) {
+            this.name = mealItem.getName();
+            this.carbos = mealItem.getCarbos();
+            this.proteins = mealItem.getProteins();
+            this.fats = mealItem.getFats();
+            this.unit = mealItem.getUnit();
+            this.gram = mealItem.getGram();
+        }
+    }
 }

@@ -70,6 +70,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         );
         SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-        // System.out.println("Authentication: " + SecurityContextHolder.getContext().getAuthentication());
+//        System.out.println("Authentication: " + SecurityContextHolder.getContext().getAuthentication());
     }
 }

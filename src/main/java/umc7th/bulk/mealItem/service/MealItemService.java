@@ -10,4 +10,6 @@ public interface MealItemService {
     List<MealItemDTO.MealItemPreviewDTO> searchMealItems(String keyword, Long cursor);
 
     List<MealItemDTO.MealItemPopularityDTO> getPopularityMealItems();
+
+    List<MealItemDTO.MealItemSearchInfoDTO> getSearchMealItemInfo(Long mealItemId);
 }

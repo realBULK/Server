@@ -6,9 +6,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import umc7th.bulk.mealItem.dto.MealItemDTO;
 import umc7th.bulk.mealItem.entity.MealItem;
+import umc7th.bulk.mealItem.exception.MealItemErrorCode;
+import umc7th.bulk.mealItem.exception.MealItemErrorException;
 import umc7th.bulk.mealItem.repository.MealItemRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,5 +48,13 @@ public class MealItemServiceImpl implements MealItemService{
         return IntStream.range(0, mealItems.size())
                 .mapToObj(k -> new MealItemDTO.MealItemPopularityDTO(mealItems.get(k), k + 1))
                 .toList();
+    }
+
+    @Override
+    public List<MealItemDTO.MealItemSearchInfoDTO> getSearchMealItemInfo(Long mealItemId) {
+        MealItem mealItem = mealItemRepository.findById(mealItemId)
+                .orElseThrow(() -> new MealItemErrorException(MealItemErrorCode.NOT_FOUND));
+
+        return List.of(new MealItemDTO.MealItemSearchInfoDTO(mealItem));
     }
 }
