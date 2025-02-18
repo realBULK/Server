@@ -16,7 +16,11 @@ public class AuthController {
     private final KakaoAuthService kakaoAuthService;
     @PostMapping("/kakao/token")
     public ResponseEntity<?> getKakaoToken(@RequestParam("code") String code) {
+        System.out.println("api ok");
+        System.out.println("code = " + code);
+
         KakaoTokenResponse tokenResponse = kakaoAuthService.requestKakaoToken(code);
+
         return ResponseEntity.ok(tokenResponse);
     }
 }
