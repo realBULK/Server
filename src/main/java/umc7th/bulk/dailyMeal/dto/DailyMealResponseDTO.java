@@ -24,7 +24,7 @@ public class DailyMealResponseDTO {
                     .dailyMealId(dailyMeal.getId())
                     .date(dailyMeal.getDate())
                     .meals(dailyMeal.getMeals().stream()
-                            .map(meal -> new MealDTO.MealNutritionDTO(meal))
+                            .map(MealDTO.MealNutritionDTO::new)
                             .toList())
                     .build();
         }

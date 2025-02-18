@@ -26,16 +26,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
-
-
         // CORS 설정 추가
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable());
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
+
 
         // CORS 필터를 Spring Security 필터보다 먼저 실행하도록 설정
-        http.addFilterBefore(new CorsFilter(corsConfigurationSource()), ChannelProcessingFilter.class);
+//        http.addFilterBefore(new CorsFilter(corsConfigurationSource()), ChannelProcessingFilter.class);
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -56,10 +54,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://bulkapp.site", "http://localhost:8080", "http://43.200.218.42:8080")); // 허용할 도메인
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "https://bulkapp.site"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 쿠키 포함 여부
+
+        // Preflight 요청을 허용하기 위해 Expose Headers 추가
+        configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 적용

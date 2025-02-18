@@ -24,7 +24,7 @@ public class DailyMealDTO {
             dailyMealId = dailyMeal.getId();
             date = dailyMeal.getDate();
             meals = dailyMeal.getMeals().stream()
-                    .map(meal -> new MealDTO.MealInfoDTO(meal))
+                    .map(MealDTO.MealInfoDTO::new)
                     .collect(Collectors.toList());
             dailyCalories = dailyMeal.getDailyCalories();
             dailyCarbos = dailyMeal.getDailyCarbos();
