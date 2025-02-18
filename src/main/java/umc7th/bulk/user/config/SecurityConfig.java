@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,16 +26,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(csrf -> csrf.disable());
+        http.sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
+
 
         // CORS 설정 추가
-//        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable());
+
         // CORS 필터를 Spring Security 필터보다 먼저 실행하도록 설정
         http.addFilterBefore(new CorsFilter(corsConfigurationSource()), ChannelProcessingFilter.class);
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**", "/api/user/unlink", "/test/**", "/api/user/question/isDuplicated/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/oauth2/**", "/api/user/unlink", "/test/**", "/api/user/question/isDuplicated/**", "/api/user/token").permitAll()
                 .anyRequest().authenticated()
         );
 
