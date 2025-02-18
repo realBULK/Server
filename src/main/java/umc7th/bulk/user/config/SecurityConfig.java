@@ -29,7 +29,7 @@ public class SecurityConfig {
         // CORS 설정 추가
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy((SessionCreationPolicy.STATELESS)));
+                .sessionManagement(session -> session.sessionCreationPolicy((SessionCreationPolicy.IF_REQUIRED)));
 
 
         // CORS 필터를 Spring Security 필터보다 먼저 실행하도록 설정
