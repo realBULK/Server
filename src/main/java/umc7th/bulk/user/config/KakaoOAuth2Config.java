@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 //@ConfigurationProperties(prefix = "spring.security.oauth2.client.registration.kakao")
 public class KakaoOAuth2Config {
 
-    private String clientId = "9555ae675b3e27488bd10e7f09ea12bd";
+    private String clientId;
 
-    private String clientSecret = "V1LPr6eQPAHRTKIcmeXczG63dkdlaUrF";
+    private String clientSecret;
 
-    private String redirectUri = "https://bulkapp.site/home";
+    private String redirectUri;
 }

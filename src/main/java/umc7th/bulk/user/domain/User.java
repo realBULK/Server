@@ -157,4 +157,14 @@ public class User extends BaseTimeEntity {
         this.BMR = targetNutritionDTO.getBmr();
         this.TDEE = targetNutritionDTO.getTdee();
     }
+
+    public void setGroup(Group group) {
+        if (this.group != null) {
+            this.group.getMembers().remove(this);
+        }
+        this.group = group;
+        if (!group.getMembers().contains(this)) {
+            group.getMembers().add(this);
+        }
+    }
 }

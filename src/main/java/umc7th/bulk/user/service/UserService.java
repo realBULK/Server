@@ -15,12 +15,16 @@ import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.character.repository.BulkCharacterRepository;
 import umc7th.bulk.global.error.GeneralErrorCode;
 import umc7th.bulk.global.error.exception.CustomException;
+import umc7th.bulk.group.entity.Group;
+import umc7th.bulk.group.repository.GroupRepository;
 import umc7th.bulk.user.annotation.CurrentUser;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.exception.UserErrorCode;
 import umc7th.bulk.user.exception.UserException;
 import umc7th.bulk.user.principal.PrincipalDetails;
 import umc7th.bulk.user.repository.UserRepository;
+
+import java.time.LocalDateTime;
 
 import static umc7th.bulk.user.dto.UserDTO.*;
 
@@ -32,6 +36,7 @@ public class UserService {
     private final WebClient webClient;
     private final OAuth2AuthorizedClientService authorizedClientService;
     private final BulkCharacterRepository bulkCharacterRepository;
+    private final GroupRepository groupRepository;
 
     private static final String UNLINK_URL = "https://kapi.kakao.com/v1/user/unlink";
 
@@ -54,6 +59,16 @@ public class UserService {
                 .build();
         bulkCharacterRepository.save(bulkCharacter);
 
+        // 기존 그룹 중 10명 미만인 그룹 찾기 (없으면 새 그룹 생성)
+        Group group = groupRepository.findGroupWithSpace().orElseGet(() -> {
+            Group newGroup = Group.builder()
+                    .groupName("Group_" + System.currentTimeMillis()) // 유니크한 그룹 이름 생성
+                    .currentStage(1)
+                    .endDate(LocalDateTime.now().plusDays(7)) // 그룹 종료일 7일 후 설정
+                    .build();
+            return groupRepository.save(newGroup);
+        });
+
         User user = User.builder()
                 .kakaoId(kakaoId)
                 .email(email)
@@ -67,7 +82,10 @@ public class UserService {
                 .curCarbos(0L)
                 .curProteins(0L)
                 .curFats(0L)
+                .group(group)
                 .build();
+
+        group.addMember(user);
 
         return userRepository.save(user);
     }
