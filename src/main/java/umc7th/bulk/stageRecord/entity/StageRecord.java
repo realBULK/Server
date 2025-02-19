@@ -26,7 +26,7 @@ public class StageRecord extends BaseTimeEntity {
     private int stageNumber;
 
     @Column(nullable = false)
-    private int totalUsers;
+    private int totalUsers = 0;
 
     @Column(nullable = false)
     private int recordedUsers;
@@ -50,11 +50,16 @@ public class StageRecord extends BaseTimeEntity {
         this.recordedUsers++;
     }
 
-    public void increaseTotalUsers() { this.totalUsers++; }
+    public void increaseTotalUsers() { this.totalUsers = this.totalUsers + 1; }
 
     // 스테이지 완료 처리 로직
     public void completeStage() {
         this.isCompleted = true;
         this.completedAt = LocalDateTime.now();
     }
+
+    public void resetRecordedUsers() {
+        this.recordedUsers = 0;
+    }
+
 }

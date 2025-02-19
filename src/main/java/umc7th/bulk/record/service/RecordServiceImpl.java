@@ -393,8 +393,41 @@ public class RecordServiceImpl implements RecordService {
         // 현재 그룹에서 recordComplete = true인 유저 수 확인
         int recordedCount = userRepository.countByGroupAndRecordCompleteTrue(group);
 
-        if (recordedCount >= 5) {
-            advanceStage(group);
+        StageRecord currentStageRecord = stageRecordRepository
+                .findTopByGroupOrderByStageNumberDesc(group)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.GROUP_NOT_FOUND_404));
+
+        currentStageRecord.increaseRecordedUsers();
+        stageRecordRepository.save(currentStageRecord);
+
+        LocalDate stageCreationDate = currentStageRecord.getCreatedAt().toLocalDate(); // 스테이지 생성일 가져오기
+        LocalDate today = LocalDate.now();
+
+        checkAndCreateNewStageIfNeeded(group, stageCreationDate, recordedCount);
+    }
+
+    private void checkAndCreateNewStageIfNeeded(Group group, LocalDate stageCreationDate, int recordedCount) {
+        LocalDate today = LocalDate.now();
+
+        if (!stageCreationDate.equals(today)) {
+            log.info("✅ 새로운 날이므로 모든 팀의 recordedUsers 초기화 진행...");
+
+            // **모든 그룹의 최신 스테이지 가져와서 recordedUsers 초기화**
+            List<StageRecord> latestStageRecords = stageRecordRepository.findLatestStageRecordsForAllGroups();
+
+            for (StageRecord stageRecord : latestStageRecords) {
+                stageRecord.resetRecordedUsers();
+            }
+
+            stageRecordRepository.saveAll(latestStageRecords);
+
+            // 🔹 기록 완료 인원이 5명 이상이면 새로운 스테이지 생성
+            if (recordedCount >= 5) {
+                log.info("🔥 5명 이상 기록 완료 → 새로운 스테이지 생성!");
+                advanceStage(group);
+            } else {
+                log.info("⏳ 5명 이상이 기록하지 않았으므로 기존 스테이지 유지.");
+            }
         }
     }
 
