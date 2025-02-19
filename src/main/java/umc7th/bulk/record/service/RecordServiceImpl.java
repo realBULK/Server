@@ -20,6 +20,7 @@ import umc7th.bulk.record.upload.S3Service;
 import umc7th.bulk.recordedFood.entity.RecordedFood;
 import umc7th.bulk.recordedFood.repository.RecordedFoodRepository;
 import umc7th.bulk.user.domain.User;
+import umc7th.bulk.user.repository.UserRepository;
 import umc7th.bulk.user.service.UserService;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class RecordServiceImpl implements RecordService {
     private final S3Service s3Service;
     private final AiCallService aiCallService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional
     public RecordResponseDto createRecord(RecordRequestDto.Create requestDto) {
@@ -55,6 +57,10 @@ public class RecordServiceImpl implements RecordService {
         if (existingRecord != null) {
             throw new IllegalArgumentException("이미 해당 날짜와 끼니에 대한 기록이 존재합니다.");
         }
+
+        // 사용자의 해당 날짜 기록 확인
+        boolean hasRecordToday = recordRepository.existsByUserAndDate(user, requestDto.getDate());
+
 
         // 사용자의 끼니(MealType)에 해당하는 식단 데이터 조회
         List<MealMealItemMapping> mealMappings = mealMealItemMappingRepository.findByMeal_LocalDateAndMeal_Type(
@@ -77,6 +83,12 @@ public class RecordServiceImpl implements RecordService {
                 .build();
 
         Record savedRecord = recordRepository.save(record);
+
+        // 하루에 한 번이라도 기록하면 record_complete = true 설정
+        if (!hasRecordToday) {
+            user.markRecordComplete();
+            userRepository.save(user);
+        }
 
         // MealItem을 기반으로 RecordedFood 생성
         List<RecordedFood> recordedFoods = mealMappings.stream()
@@ -151,6 +163,10 @@ public class RecordServiceImpl implements RecordService {
 
         // MealType 변환
         MealType type = requestDto.getMealType();
+
+        // 사용자의 해당 날짜 기록 확인
+        boolean hasRecordToday = recordRepository.existsByUserAndDate(user, requestDto.getDate());
+
 
         String uploadedImageUrl = null;
         String gptRawResponseString = null;
@@ -255,6 +271,12 @@ public class RecordServiceImpl implements RecordService {
 
         Record savedRecord = recordRepository.save(record);
         log.info("✅ Record 저장 완료: recordId={}", savedRecord.getId());
+
+        // 하루에 한 번이라도 기록하면 record_complete = true 설정
+        if (!hasRecordToday) {
+            user.markRecordComplete();
+            userRepository.save(user);
+        }
 
         // Response 생성
         return RecordResponseDto.builder()

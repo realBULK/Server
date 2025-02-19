@@ -76,7 +76,7 @@ public class User extends BaseTimeEntity {
     private String favoriteFood;
 
     @Column(nullable = false, name = "record_complete")
-    private boolean recordComplete;
+    private boolean recordComplete = false;
 
     @Column(nullable = false, name = "access_token")
     private String accessToken;
@@ -165,6 +165,12 @@ public class User extends BaseTimeEntity {
         this.group = group;
         if (!group.getMembers().contains(this)) {
             group.getMembers().add(this);
+        }
+    }
+
+    public void markRecordComplete() {
+        if (!this.recordComplete) {
+            this.recordComplete = true;
         }
     }
 }

@@ -22,4 +22,5 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     @Query("SELECT r FROM Record r WHERE r.user = :user AND r.date = :date")
     List<Record> findByUserAndDate(@Param("user") User user, @Param("date") LocalDate date);
 
+    boolean existsByUserAndDate(User user, LocalDate date);
 }
