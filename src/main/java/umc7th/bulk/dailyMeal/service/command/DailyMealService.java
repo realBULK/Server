@@ -9,5 +9,5 @@ public interface DailyMealService {
 
     DailyMeal createDailyMeal(MealPlan mealPlan, MealPlanRequestDTO.DailyMealDTO dto);
 
-    DailyMealResponseDTO.DailyMealGetResponseDTO getDailyMeal(Long dailyMealId);
+    DailyMealResponseDTO.DailyMealGetResponseDTO getDailyMeal(Long userId, Long dailyMealId);
 }

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import umc7th.bulk.global.apiPayload.CustomResponse;
 import umc7th.bulk.global.success.GeneralSuccessCode;
 import umc7th.bulk.mealMealItemMapping.service.command.MealMealItemMappingCommandService;
+import umc7th.bulk.user.domain.User;
+import umc7th.bulk.user.service.UserService;
+import umc7th.bulk.user.service.command.UserCommandServiceImpl;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,13 +22,16 @@ import umc7th.bulk.mealMealItemMapping.service.command.MealMealItemMappingComman
 public class MealMealItemMappingController {
 
     private final MealMealItemMappingCommandService mappingCommandService;
+    private final UserService userService;
 
     @DeleteMapping("/{mealMealItemMappingId}")
     @Operation(method = "DELETE", summary = "끼니에서의 특정 음식 삭제 API")
     @Parameter(name = "mealMealItemMappingId", description = "삭제 해야하는 끼니-음식 ID 입력.")
     public CustomResponse<?> deleteMealMealItemMappingById(@PathVariable("mealMealItemMappingId") Long mealMealItemMappingId) {
 
-        mappingCommandService.deleteMealMealItemMapping(mealMealItemMappingId);
+        User user = userService.getAuthenticatedUserInfo();
+
+        mappingCommandService.deleteMealMealItemMapping(user, mealMealItemMappingId);
         return CustomResponse.onSuccess(GeneralSuccessCode.OK);
     }
 }

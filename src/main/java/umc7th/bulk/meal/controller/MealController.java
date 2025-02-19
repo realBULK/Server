@@ -30,8 +30,7 @@ public class MealController {
             @RequestParam(name = "pageSize", defaultValue = "2") int pageSize) {
 
         User user = userService.getAuthenticatedUserInfo();
-
-        MealResponseDTO.MealPreviewDTO mealItems = mealQueryService.getMealItems(dailyMealId, type, cursorId, pageSize);
+        MealResponseDTO.MealPreviewDTO mealItems = mealQueryService.getMealItems(user.getId(),dailyMealId, type, cursorId, pageSize);
         return CustomResponse.onSuccess(GeneralSuccessCode.OK, mealItems);
     }
 
