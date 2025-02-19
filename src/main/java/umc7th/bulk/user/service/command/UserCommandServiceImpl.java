@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import umc7th.bulk.character.entity.BulkCharacter;
+import umc7th.bulk.character.repository.BulkCharacterRepository;
 import umc7th.bulk.global.jwt.util.JwtProvider;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.dto.UserRequestDTO;
@@ -22,6 +24,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final JwtProvider jwtProvider;
+    private final BulkCharacterRepository bulkCharacterRepository;
 
     @Override
     public UserResponseDTO.UserTokenDTO signup(UserRequestDTO.SignupDTO dto) {
@@ -46,12 +49,21 @@ public class UserCommandServiceImpl implements UserCommandService {
         String accessToken = jwtProvider.createAccessToken(tempUser);
         String refreshToken = jwtProvider.createRefreshToken(tempUser);
 
-        // User 저장
+        // **BulkCharacter 자동 생성 추가**
+        BulkCharacter bulkCharacter = BulkCharacter.builder()
+                .name(emailKey + "_BULK")
+                .level(0)
+                .point(0)
+                .build();
+        bulkCharacterRepository.save(bulkCharacter);
+
+        // User 저장 (BulkCharacter 포함)
         User user = User.builder()
                 .email(emailKey)
                 .password(encodedPassword)
-                .accessToken(accessToken) // 추가
-                .refreshToken(refreshToken) // 추가
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .bulkCharacter(bulkCharacter) // 🔥 BulkCharacter 설정
                 .build();
 
         try {
