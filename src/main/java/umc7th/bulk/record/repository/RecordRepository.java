@@ -9,6 +9,7 @@ import umc7th.bulk.record.entity.Record;
 import umc7th.bulk.user.domain.User;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,5 +18,8 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     @Query("SELECT r FROM Record r LEFT JOIN FETCH r.foods WHERE r.user = :user AND r.date = :date AND r.mealType = :mealType")
     Optional<Record> findByUserAndDateAndMealTypeWithFoods(@Param("user") User user, @Param("date") LocalDate date, @Param("mealType") MealType mealType);
+
+    @Query("SELECT r FROM Record r WHERE r.user = :user AND r.date = :date")
+    List<Record> findByUserAndDate(@Param("user") User user, @Param("date") LocalDate date);
 
 }

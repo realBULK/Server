@@ -36,4 +36,14 @@ public class RecordResponseDto {
         private Long proteins;
         private Long fats;
     }
+
+    @Getter
+    @Builder
+    public static class TodaySummary {
+        private LocalDate date;
+        private Long totalCalories;
+        private Long totalCarbs;
+        private Long totalProtein;
+        private Long totalFat;
+    }
 }

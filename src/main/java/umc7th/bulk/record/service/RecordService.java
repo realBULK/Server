@@ -10,4 +10,5 @@ public interface RecordService {
     RecordResponseDto createRecord(RecordRequestDto.Create requestDto);
     RecordResponseDto createNotFollowedRecord(RecordRequestDto.CreateNotFollowed requestDto);
     RecordResponseDto getRecord(User user, LocalDate date, String mealType);
+    RecordResponseDto.TodaySummary getTodayRecord(User user);
 }

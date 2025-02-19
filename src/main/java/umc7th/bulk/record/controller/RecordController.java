@@ -56,4 +56,13 @@ public class RecordController {
 
         return ResponseEntity.ok(CustomResponse.onSuccess(GeneralSuccessCode.OK, responseDto));
     }
+
+    @Operation(summary = "오늘 하루 동안 먹은 영양 정보 조회")
+    @GetMapping("/today")
+    public ResponseEntity<CustomResponse<RecordResponseDto.TodaySummary>> getTodayRecord() {
+        User user = userService.getAuthenticatedUserInfo();
+        RecordResponseDto.TodaySummary responseDto = recordService.getTodayRecord(user);
+        return ResponseEntity.ok(CustomResponse.onSuccess(GeneralSuccessCode.OK, responseDto));
+    }
+
 }

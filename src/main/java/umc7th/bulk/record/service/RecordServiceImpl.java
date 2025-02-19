@@ -319,5 +319,36 @@ public class RecordServiceImpl implements RecordService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
+    public RecordResponseDto.TodaySummary getTodayRecord(User user) {
+        LocalDate today = LocalDate.now();
+        List<Record> todayRecords = recordRepository.findByUserAndDate(user, today);
+
+        // 기록이 없을 경우 기본값 반환
+        if (todayRecords.isEmpty()) {
+            return RecordResponseDto.TodaySummary.builder()
+                    .date(today)
+                    .totalCalories(0L)
+                    .totalCarbs(0L)
+                    .totalProtein(0L)
+                    .totalFat(0L)
+                    .build();
+        }
+
+        // 영양소 합산
+        Long totalCalories = todayRecords.stream().mapToLong(Record::getTotalCalories).sum();
+        Long totalCarbs = todayRecords.stream().mapToLong(Record::getTotalCarbs).sum();
+        Long totalProtein = todayRecords.stream().mapToLong(Record::getTotalProtein).sum();
+        Long totalFat = todayRecords.stream().mapToLong(Record::getTotalFat).sum();
+
+        return RecordResponseDto.TodaySummary.builder()
+                .date(today)
+                .totalCalories(totalCalories)
+                .totalCarbs(totalCarbs)
+                .totalProtein(totalProtein)
+                .totalFat(totalFat)
+                .build();
+    }
+
 
 }
