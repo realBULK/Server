@@ -20,6 +20,7 @@ import umc7th.bulk.record.upload.S3Service;
 import umc7th.bulk.recordedFood.entity.RecordedFood;
 import umc7th.bulk.recordedFood.repository.RecordedFoodRepository;
 import umc7th.bulk.user.domain.User;
+import umc7th.bulk.user.repository.UserRepository;
 import umc7th.bulk.user.service.UserService;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class RecordServiceImpl implements RecordService {
     private final S3Service s3Service;
     private final AiCallService aiCallService;
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @Transactional
     public RecordResponseDto createRecord(RecordRequestDto.Create requestDto) {
@@ -108,6 +110,10 @@ public class RecordServiceImpl implements RecordService {
         Long totalCarbs = recordedFoods.stream().mapToLong(RecordedFood::getCarbos).sum();
         Long totalProtein = recordedFoods.stream().mapToLong(RecordedFood::getProteins).sum();
         Long totalFat = recordedFoods.stream().mapToLong(RecordedFood::getFats).sum();
+
+        // **✅ 사용자 현재 영양소 값 업데이트**
+        user.updateCurrentNutrients(totalCalories, totalCarbs, totalProtein, totalFat);
+        userRepository.save(user);
 
         // Record에 영양소 값 업데이트
         savedRecord.updateNutrients(totalCalories, totalCarbs, totalProtein, totalFat);
