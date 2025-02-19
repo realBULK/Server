@@ -1,6 +1,9 @@
 package umc7th.bulk.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import umc7th.bulk.user.domain.User;
 
 import java.util.List;
@@ -14,4 +17,9 @@ public interface UserRepository extends JpaRepository<User,Long> {
     List<User> findByGroupGroupIdAndRecordCompleteTrue(Long groupId); // 해당 그룹 id 에서 오늘 기록 달성한 사용자 리스트
     Optional<User> findByKakaoId(String kakaoId);
     Optional<User> findByEmail(String email);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.recordComplete = false")
+    int resetRecordComplete();
 }
