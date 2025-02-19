@@ -1,7 +1,9 @@
 package umc7th.bulk.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -13,9 +15,11 @@ import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.character.repository.BulkCharacterRepository;
 import umc7th.bulk.global.error.GeneralErrorCode;
 import umc7th.bulk.global.error.exception.CustomException;
+import umc7th.bulk.user.annotation.CurrentUser;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.exception.UserErrorCode;
 import umc7th.bulk.user.exception.UserException;
+import umc7th.bulk.user.principal.PrincipalDetails;
 import umc7th.bulk.user.repository.UserRepository;
 
 import static umc7th.bulk.user.dto.UserDTO.*;
@@ -127,6 +131,7 @@ public class UserService {
                 new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 
+    /*
     public User getAuthenticatedUserInfo() {
         String kakaoId;
         try {
@@ -142,5 +147,31 @@ public class UserService {
         }
         return user;
 
+    }*/
+    public User getAuthenticatedUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new UserException(UserErrorCode.USER_NOT_AUTHENTICATED);
+        }
+
+        Object principal = authentication.getPrincipal();
+        System.out.println("🔍 Principal Type: " + principal.getClass().getName());
+        System.out.println("🔍 Principal Value: " + principal);
+
+        String email;
+        if (principal instanceof String) {
+            email = (String) principal;
+        } else if (principal instanceof PrincipalDetails) {
+            email = ((PrincipalDetails) principal).getUsername();
+        } else {
+            throw new UserException(UserErrorCode.USER_NOT_AUTHENTICATED);
+        }
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
+
+
+
 }
