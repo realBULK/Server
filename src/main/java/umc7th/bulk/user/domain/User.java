@@ -167,4 +167,11 @@ public class User extends BaseTimeEntity {
             group.getMembers().add(this);
         }
     }
+
+    public void updateCurrentNutrients(Long calories, Long carbos, Long proteins, Long fats) {
+        this.curCalories += calories;
+        this.curCarbos += carbos;
+        this.curProteins += proteins;
+        this.curFats += fats;
+    }
 }
