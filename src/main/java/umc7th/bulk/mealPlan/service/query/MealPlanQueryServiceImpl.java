@@ -3,6 +3,8 @@ package umc7th.bulk.mealPlan.service.query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import umc7th.bulk.global.error.GeneralErrorCode;
+import umc7th.bulk.global.error.exception.CustomException;
 import umc7th.bulk.mealPlan.entity.MealPlan;
 import umc7th.bulk.mealPlan.exception.MealPlanErrorCode;
 import umc7th.bulk.mealPlan.exception.MealPlanException;
@@ -24,7 +26,10 @@ public class MealPlanQueryServiceImpl implements MealPlanQueryService {
     public MealPlan getMealPlan(Long userId, Long mealPlanId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-        return mealPlanRepository.findById(mealPlanId).orElseThrow(() -> new MealPlanException(MealPlanErrorCode.MEAL_PLAN_NOT_FOUND));
-
+        MealPlan mealPlan = mealPlanRepository.findById(mealPlanId).orElseThrow(() -> new MealPlanException(MealPlanErrorCode.MEAL_PLAN_NOT_FOUND));
+        if (!mealPlan.getUser().getId().equals(user.getId()) ) {
+            throw new CustomException(GeneralErrorCode.FORBIDDEN_403);
+        }
+        return mealPlan;
     }
 }
