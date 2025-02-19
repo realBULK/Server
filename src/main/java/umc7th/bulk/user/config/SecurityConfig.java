@@ -55,21 +55,20 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // 인증 및 권한 설정
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers(allowUrl).permitAll() // 지정된 URL은 접근 허용
-                        .anyRequest().authenticated()) // 그 외의 모든 요청은 인증 요구
-
-                // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가하여 인증 절차 진행
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
-
+                // CSRF 보안을 비활성화
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 // 기본 폼 로그인 기능을 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
                 // 기본 HTTP Basic 인증을 비활성화
                 .httpBasic(HttpBasicConfigurer::disable)
-                // CSRF 보안을 비활성화
-                .csrf(AbstractHttpConfigurer::disable)
-
+                // 인증 및 권한 설정
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(allowUrl).permitAll() // 지정된 URL은 접근 허용
+                        .anyRequest().authenticated()) // 그 외의 모든 요청은 인증 요구
+                .addFilterBefore(new CorsFilter(corsConfigurationSource()), UsernamePasswordAuthenticationFilter.class)
+                // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 추가하여 인증 절차 진행
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
                 // 예외 처리 설정: 접근 거부 시 및 인증 실패 시 핸들러 지정
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         // 접근 거부 시 처리할 핸들러 : jwtAccessDeniedHandler
@@ -80,6 +79,20 @@ public class SecurityConfig {
 
         return http.build(); // 이렇게 필터 체인 생성해서 반환!
     }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://bulkapp.site"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
     @Bean // JWTFilter를 빈으로 등록
     // JWT 필터에 jwtProvider와 principalDetailsService 주입
