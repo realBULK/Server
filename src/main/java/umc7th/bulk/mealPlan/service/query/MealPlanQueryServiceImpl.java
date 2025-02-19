@@ -14,6 +14,8 @@ import umc7th.bulk.user.exception.UserErrorCode;
 import umc7th.bulk.user.exception.UserException;
 import umc7th.bulk.user.repository.UserRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,5 +33,19 @@ public class MealPlanQueryServiceImpl implements MealPlanQueryService {
             throw new CustomException(GeneralErrorCode.FORBIDDEN_403);
         }
         return mealPlan;
+    }
+
+    @Override
+    public List<Long> getMealPlans(User user) {
+
+        List<MealPlan> userMealPlans = mealPlanRepository.findByUserId(user.getId());
+        if (userMealPlans.isEmpty()) {
+            throw new MealPlanException(MealPlanErrorCode.USER_MEAL_PLAN_NOT_FOUND);
+        }
+
+        return userMealPlans.stream()
+                .map(mealPlan -> mealPlan.getId())
+                .toList();
+
     }
 }
