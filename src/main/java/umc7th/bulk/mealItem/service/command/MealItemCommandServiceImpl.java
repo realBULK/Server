@@ -8,6 +8,8 @@ import umc7th.bulk.mealItem.entity.MealItem;
 import umc7th.bulk.mealItem.repository.MealItemRepository;
 import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,26 +22,15 @@ public class MealItemCommandServiceImpl implements MealItemCommandService {
     @Transactional
     public MealItem createMealItem(MealPlanRequestDTO.MealItemDTO dto) {
 
-        log.info("🔍 Checking if meal item exists: {}", dto.getName());
-        MealItem saveMealItem = mealItemRepository.saveAndFlush(dto.toMealItemEntity(dto));
-        return saveMealItem;
+        Optional<MealItem> mealItem1 = mealItemRepository.findByName(dto.getName());
 
-//        System.out.println(mealItem.getName());
+        MealItem mealItem2 = null;
+        if (mealItem1.isPresent()) {
+            mealItem2 = mealItem1.get();
+        } else {
+            mealItem2 = mealItemRepository.save(dto.toMealItemEntity(dto));
+        }
 
-        /*if (mealItem == null) {
-            MealItem saveMeal = mealItemRepository.save(dto.toMealItemEntity(dto));
-            return saveMeal;
-        }*/
-
-        /*if (mealItems.size() >= 2) {
-            log.warn("⚠️ Found existing meal item: {}", dto.getName());
-            mealItemRepository.deleteLastByName(dto.getName());
-        }*/
-
-        /*MealItem newMealItem = mealItemRepository.save(dto.toMealItemEntity(dto));
-        log.info("💾 Saving new meal item: {}", newMealItem);*/
-
-//        return mealItem;
-
+        return mealItem2;
     }
 }

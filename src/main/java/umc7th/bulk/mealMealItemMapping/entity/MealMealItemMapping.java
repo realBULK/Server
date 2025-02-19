@@ -21,7 +21,7 @@ public class MealMealItemMapping {
     @JoinColumn(name = "meal_id")
     private Meal meal;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meal_item_id")
     private MealItem mealItem;
 
