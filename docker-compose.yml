@@ -6,11 +6,15 @@ services:
     image: eunsxx/bulk-server
     ports:
       - "8080:8080"
+      - "443:443"
     restart: always
     volumes:
       - type: bind
         source: /home/ubuntu/app/application.yml
         target: /app/application.yml
+      - type: bind
+        source: /home/ubuntu/app/keystore.p12
+        target: /app/keystore.p12
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_CONFIG_LOCATION=/app/application.yml
