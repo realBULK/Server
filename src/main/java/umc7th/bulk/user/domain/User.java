@@ -174,6 +174,7 @@ public class User extends BaseTimeEntity {
             this.recordComplete = true;
         }
 
+    }
     public void updateCurrentNutrients(Long calories, Long carbos, Long proteins, Long fats) {
         this.curCalories += calories;
         this.curCarbos += carbos;
