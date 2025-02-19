@@ -47,6 +47,7 @@ public class RecordServiceImpl implements RecordService {
     private final AiCallService aiCallService;
     private final UserService userService;
     private final UserRepository userRepository;
+
     private final StageRecordRepository stageRecordRepository;
     private final GroupRepository groupRepository;
 
@@ -130,6 +131,10 @@ public class RecordServiceImpl implements RecordService {
         Long totalCarbs = recordedFoods.stream().mapToLong(RecordedFood::getCarbos).sum();
         Long totalProtein = recordedFoods.stream().mapToLong(RecordedFood::getProteins).sum();
         Long totalFat = recordedFoods.stream().mapToLong(RecordedFood::getFats).sum();
+
+        // **✅ 사용자 현재 영양소 값 업데이트**
+        user.updateCurrentNutrients(totalCalories, totalCarbs, totalProtein, totalFat);
+        userRepository.save(user);
 
         // Record에 영양소 값 업데이트
         savedRecord.updateNutrients(totalCalories, totalCarbs, totalProtein, totalFat);

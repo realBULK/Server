@@ -101,6 +101,10 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .bulkCharacter(bulkCharacter) // 🔥 BulkCharacter 설정
+                .curCalories(0L)
+                .curCarbos(0L)
+                .curProteins(0L)
+                .curFats(0L)
                 .recordComplete(false)
                 .group(group)
                 .build();
