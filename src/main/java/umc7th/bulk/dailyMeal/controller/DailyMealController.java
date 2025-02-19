@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import umc7th.bulk.dailyMeal.service.command.DailyMealService;
 import umc7th.bulk.global.apiPayload.CustomResponse;
 import umc7th.bulk.global.success.GeneralSuccessCode;
+import umc7th.bulk.user.domain.User;
+import umc7th.bulk.user.service.UserService;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,10 +17,13 @@ import umc7th.bulk.global.success.GeneralSuccessCode;
 public class DailyMealController {
 
     private final DailyMealService dailyMealService;
+    private final UserService userService;
 
     @GetMapping("/api/dailyMeal/{dailyMealId}")
     public CustomResponse<?> getDailyMeal(@PathVariable("dailyMealId") Long dailyMealId) {
 
-        return CustomResponse.onSuccess(GeneralSuccessCode.OK, dailyMealService.getDailyMeal(dailyMealId));
+        User user = userService.getAuthenticatedUserInfo();
+
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, dailyMealService.getDailyMeal(user.getId(), dailyMealId));
     }
 }

@@ -7,6 +7,8 @@ import umc7th.bulk.dailyMeal.entity.DailyMeal;
 import umc7th.bulk.dailyMeal.exception.DailyMealErrorCode;
 import umc7th.bulk.dailyMeal.exception.DailyMealException;
 import umc7th.bulk.dailyMeal.repository.DailyMealRepository;
+import umc7th.bulk.global.error.GeneralErrorCode;
+import umc7th.bulk.global.error.exception.CustomException;
 import umc7th.bulk.meal.service.command.MealCommandService;
 import umc7th.bulk.mealPlan.dto.MealPlanRequestDTO;
 import umc7th.bulk.mealPlan.entity.MealPlan;
@@ -38,10 +40,14 @@ public class DailyMealServiceImpl implements DailyMealService {
     }
 
     @Override
-    public DailyMealResponseDTO.DailyMealGetResponseDTO getDailyMeal(Long dailyMealId) {
+    public DailyMealResponseDTO.DailyMealGetResponseDTO getDailyMeal(Long userId, Long dailyMealId) {
 
         DailyMeal dailyMeal = dailyMealRepository.findById(dailyMealId).orElseThrow(() ->
                 new DailyMealException(DailyMealErrorCode.NOT_FOUND));
+
+        if (!dailyMeal.getMealPlan().getUser().getId().equals(userId)) {
+            throw new CustomException(GeneralErrorCode.FORBIDDEN_403);
+        }
 
         return DailyMealResponseDTO.DailyMealGetResponseDTO.from(dailyMeal);
     }
