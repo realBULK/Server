@@ -77,7 +77,7 @@ public class UserCommandServiceImpl implements UserCommandService {
             StageRecord firstStage = StageRecord.builder()
                     .group(newGroup)
                     .stageNumber(1)
-                    .totalUsers(1)
+                    .totalUsers(0)
                     .recordedUsers(0)
                     .isCompleted(false)
                     .build();
@@ -86,7 +86,8 @@ public class UserCommandServiceImpl implements UserCommandService {
             return newGroup;
         });
 
-        if (!groupRepository.findGroupWithSpace().isPresent()) { // 기존 그룹인지 확인
+        // 기존 그룹인지 확인
+        if (group.getGroupId() != null) { // 기존 그룹이면 totalUsers 증가
             StageRecord latestStage = stageRecordRepository.findTopByGroupOrderByStageNumberDesc(group)
                     .orElseThrow(() -> new RuntimeException("StageRecord not found for existing group."));
             latestStage.increaseTotalUsers();
