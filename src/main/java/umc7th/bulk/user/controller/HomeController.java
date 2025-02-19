@@ -18,11 +18,6 @@ public class HomeController {
 
     private final UserService userService;
 
-//    @GetMapping("/home")
-//    public String home() {
-//        return "Welcome back! You are successfully logged in.";
-//    }
-
     @GetMapping("/home/info")
     @Operation(summary = "홈 api", description = "홈 화면의 정보가 보여진다. 캐릭터 정보와 목표 칼로리, 탄단지")
     public CustomResponse<?> home() {

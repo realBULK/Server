@@ -1,8 +1,16 @@
 package umc7th.bulk.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -10,17 +18,22 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import umc7th.bulk.global.apiPayload.CustomResponse;
 import umc7th.bulk.global.success.GeneralSuccessCode;
+import umc7th.bulk.user.annotation.CurrentUser;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.dto.UserRequestDTO;
 import umc7th.bulk.user.dto.UserResponseDTO;
 import umc7th.bulk.user.exception.UserErrorCode;
+import umc7th.bulk.user.exception.UserException;
 import umc7th.bulk.user.service.UserQuestionService;
 import umc7th.bulk.user.service.UserService;
+import umc7th.bulk.user.service.command.UserCommandService;
+import umc7th.bulk.user.service.query.UserQueryService;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -30,6 +43,8 @@ public class UserController {
     private final UserService userService;
     private final UserQuestionService userQuestionService;
     private final OAuth2AuthorizedClientService authorizedClientService;
+    private final UserQueryService userQueryService;
+    private final UserCommandService userCommandService;
 
     @DeleteMapping("/unlink")
     public CustomResponse<?> unlinkUser(@AuthenticationPrincipal OAuth2User oAuth2User) {
@@ -115,4 +130,55 @@ public class UserController {
             return CustomResponse.fail(UserErrorCode.USER_NOT_FOUND);
         }
     }
+    /** 자기 정보 조회 */
+    @Operation(summary = "내 정보 조회", description = "로그인된 회원의 프로필 정보를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "프로필 정보 조회에 성공하였습니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "401", description = "권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class)))
+    })
+    @GetMapping("/profile")
+    public CustomResponse<UserResponseDTO.UserInforDTO> getMyInfo(@CurrentUser User user) {
+        UserResponseDTO.UserInforDTO myInfo = userQueryService.getProfile(user);
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, myInfo);
+    }
+
+
+    @Operation(summary = "회원가입", description = "회원가입 시 추가 정보를 입력하고 계정을 생성합니다.")
+    @Parameters({
+            @Parameter(name = "dto", description = "회원가입 완료를 위한 추가 정보 DTO")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "회원가입에 성공하였습니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "400", description = "인증되지 않은 이메일입니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class)))
+    })
+    @PostMapping("/signup")
+    public CustomResponse<UserResponseDTO.UserTokenDTO> signup(
+            @RequestBody @Valid UserRequestDTO.SignupDTO dto) {
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, userCommandService.signup(dto));
+    }
+
+    /** 회원 로그인 API */
+    @Operation(summary = "로그인", description = "회원 로그인 후 토큰을 발급받습니다.")
+    @Parameters({
+            @Parameter(name = "dto", description = "로그인을 위한 이메일과 비밀번호 입력 DTO")
+    })
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인에 성공하였습니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "401", description = "비밀번호가 틀립니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없습니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class))),
+            @ApiResponse(responseCode = "403", description = "비활성화된 계정입니다.",
+                    content = @Content(schema = @Schema(implementation = CustomResponse.class)))
+    })
+    @PostMapping("/login")
+    public CustomResponse<UserResponseDTO.UserTokenDTO> login(@RequestBody UserRequestDTO.UserLoginDTO dto) {
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, userCommandService.login(dto));
+    }
+
 }
