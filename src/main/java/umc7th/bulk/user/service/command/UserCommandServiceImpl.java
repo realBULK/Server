@@ -9,6 +9,8 @@ import umc7th.bulk.character.repository.BulkCharacterRepository;
 import umc7th.bulk.global.jwt.util.JwtProvider;
 import umc7th.bulk.group.entity.Group;
 import umc7th.bulk.group.repository.GroupRepository;
+import umc7th.bulk.stageRecord.entity.StageRecord;
+import umc7th.bulk.stageRecord.repository.StageRecordRepository;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.dto.UserRequestDTO;
 import umc7th.bulk.user.dto.UserResponseDTO;
@@ -30,6 +32,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final JwtProvider jwtProvider;
     private final BulkCharacterRepository bulkCharacterRepository;
     private final GroupRepository groupRepository;
+    private final StageRecordRepository stageRecordRepository;
 
     @Override
     public UserResponseDTO.UserTokenDTO signup(UserRequestDTO.SignupDTO dto) {
@@ -69,9 +72,26 @@ public class UserCommandServiceImpl implements UserCommandService {
                     .currentStage(1)
                     .endDate(LocalDateTime.now().plusDays(7)) // 그룹 종료일 7일 후 설정
                     .build();
-            return groupRepository.save(newGroup);
+            groupRepository.save(newGroup);
+
+            StageRecord firstStage = StageRecord.builder()
+                    .group(newGroup)
+                    .stageNumber(1)
+                    .totalUsers(1)
+                    .recordedUsers(0)
+                    .isCompleted(false)
+                    .build();
+            stageRecordRepository.save(firstStage);
+
+            return newGroup;
         });
 
+        if (!groupRepository.findGroupWithSpace().isPresent()) { // 기존 그룹인지 확인
+            StageRecord latestStage = stageRecordRepository.findTopByGroupOrderByStageNumberDesc(group)
+                    .orElseThrow(() -> new RuntimeException("StageRecord not found for existing group."));
+            latestStage.increaseTotalUsers();
+            stageRecordRepository.save(latestStage);
+        }
 
 
         // User 저장 (BulkCharacter 포함)

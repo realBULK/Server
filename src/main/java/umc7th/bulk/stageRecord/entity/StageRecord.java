@@ -50,6 +50,8 @@ public class StageRecord extends BaseTimeEntity {
         this.recordedUsers++;
     }
 
+    public void increaseTotalUsers() { this.totalUsers++; }
+
     // 스테이지 완료 처리 로직
     public void completeStage() {
         this.isCompleted = true;
