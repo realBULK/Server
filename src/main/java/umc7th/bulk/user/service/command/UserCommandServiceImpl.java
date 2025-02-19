@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import umc7th.bulk.character.entity.BulkCharacter;
 import umc7th.bulk.character.repository.BulkCharacterRepository;
 import umc7th.bulk.global.jwt.util.JwtProvider;
+import umc7th.bulk.group.entity.Group;
+import umc7th.bulk.group.repository.GroupRepository;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.dto.UserRequestDTO;
 import umc7th.bulk.user.dto.UserResponseDTO;
@@ -14,6 +16,8 @@ import umc7th.bulk.user.enums.UserStatus;
 import umc7th.bulk.user.exception.UserErrorCode;
 import umc7th.bulk.user.exception.UserException;
 import umc7th.bulk.user.repository.UserRepository;
+
+import java.time.LocalDateTime;
 
 
 @Slf4j
@@ -25,6 +29,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final PasswordEncoder encoder;
     private final JwtProvider jwtProvider;
     private final BulkCharacterRepository bulkCharacterRepository;
+    private final GroupRepository groupRepository;
 
     @Override
     public UserResponseDTO.UserTokenDTO signup(UserRequestDTO.SignupDTO dto) {
@@ -57,6 +62,18 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .build();
         bulkCharacterRepository.save(bulkCharacter);
 
+        // 기존 그룹 중 10명 미만인 그룹 찾기 (없으면 새 그룹 생성)
+        Group group = groupRepository.findGroupWithSpace().orElseGet(() -> {
+            Group newGroup = Group.builder()
+                    .groupName("Group_" + System.currentTimeMillis()) // 유니크한 그룹 이름 생성
+                    .currentStage(1)
+                    .endDate(LocalDateTime.now().plusDays(7)) // 그룹 종료일 7일 후 설정
+                    .build();
+            return groupRepository.save(newGroup);
+        });
+
+
+
         // User 저장 (BulkCharacter 포함)
         User user = User.builder()
                 .email(emailKey)
@@ -64,6 +81,8 @@ public class UserCommandServiceImpl implements UserCommandService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .bulkCharacter(bulkCharacter) // 🔥 BulkCharacter 설정
+                .recordComplete(false)
+                .group(group)
                 .build();
 
         try {

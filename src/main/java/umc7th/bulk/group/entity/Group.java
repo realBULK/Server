@@ -3,8 +3,10 @@ package umc7th.bulk.group.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import umc7th.bulk.global.BaseTimeEntity;
+import umc7th.bulk.user.domain.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +29,21 @@ public class Group extends BaseTimeEntity {
     private int currentStage = 1;
 
     private LocalDateTime endDate;
+
+    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
+    private List<User> members;
+
+    public boolean isFull() {
+        return members != null & members.size() >= 10;
+    }
+
+    public void addMember(User user) {
+        if (isFull()) {
+            throw new RuntimeException("그룹이 이미 가득 찼습니다.");
+        }
+        members.add(user);
+        user.setGroup(this);
+    }
 
     public Group(String groupName, int currentStage, LocalDateTime endDate) {
         this.groupName = groupName;
