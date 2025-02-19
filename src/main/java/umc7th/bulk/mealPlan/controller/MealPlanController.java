@@ -54,4 +54,12 @@ public class MealPlanController {
 
         return CustomResponse.onSuccess(GeneralSuccessCode.OK);
     }
+
+    @GetMapping("/user")
+    @Operation(summary = "유저의 MealPlanId 존재 여부 확인 API")
+    public CustomResponse<?> getUserMealPlansId() {
+
+        User user = userService.getAuthenticatedUserInfo();
+        return CustomResponse.onSuccess(GeneralSuccessCode.OK, mealPlanQueryService.getMealPlans(user));
+    }
 }

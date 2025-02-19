@@ -18,7 +18,7 @@ public class MealPlanResponseDTO {
     public static class MealPlanGetResponseDTO {
 
         private Long userId;
-        private Long planMealId;
+        private Long mealPlanId;
         private LocalDate startDate;
         private LocalDate endDate;
         private List<DailyMealInfoDTO> dailyMeals;
@@ -26,7 +26,7 @@ public class MealPlanResponseDTO {
         public static MealPlanGetResponseDTO from(Long userId, MealPlan mealPlan) {
             return MealPlanGetResponseDTO.builder()
                     .userId(userId)
-                    .planMealId(mealPlan.getId())
+                    .mealPlanId(mealPlan.getId())
                     .startDate(mealPlan.getStartDate())
                     .endDate(mealPlan.getEndDate())
                     .dailyMeals(mealPlan.getDailyMeals().stream()
