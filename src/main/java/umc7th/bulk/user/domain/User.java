@@ -76,7 +76,7 @@ public class User extends BaseTimeEntity {
     private String favoriteFood;
 
     @Column(nullable = false, name = "record_complete")
-    private boolean recordComplete;
+    private boolean recordComplete = false;
 
     @Column(nullable = false, name = "access_token")
     private String accessToken;
@@ -168,6 +168,13 @@ public class User extends BaseTimeEntity {
         }
     }
 
+
+    public void markRecordComplete() {
+        if (!this.recordComplete) {
+            this.recordComplete = true;
+        }
+
+    }
     public void updateCurrentNutrients(Long calories, Long carbos, Long proteins, Long fats) {
         this.curCalories += calories;
         this.curCarbos += carbos;

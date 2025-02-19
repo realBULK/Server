@@ -7,6 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import umc7th.bulk.global.error.GeneralErrorCode;
+import umc7th.bulk.global.error.exception.CustomException;
+import umc7th.bulk.group.entity.Group;
+import umc7th.bulk.group.repository.GroupRepository;
 import umc7th.bulk.meal.entity.MealType;
 import umc7th.bulk.mealItem.entity.MealItem;
 import umc7th.bulk.mealMealItemMapping.entity.MealMealItemMapping;
@@ -19,6 +23,8 @@ import umc7th.bulk.record.repository.RecordRepository;
 import umc7th.bulk.record.upload.S3Service;
 import umc7th.bulk.recordedFood.entity.RecordedFood;
 import umc7th.bulk.recordedFood.repository.RecordedFoodRepository;
+import umc7th.bulk.stageRecord.entity.StageRecord;
+import umc7th.bulk.stageRecord.repository.StageRecordRepository;
 import umc7th.bulk.user.domain.User;
 import umc7th.bulk.user.repository.UserRepository;
 import umc7th.bulk.user.service.UserService;
@@ -42,6 +48,9 @@ public class RecordServiceImpl implements RecordService {
     private final UserService userService;
     private final UserRepository userRepository;
 
+    private final StageRecordRepository stageRecordRepository;
+    private final GroupRepository groupRepository;
+
     @Transactional
     public RecordResponseDto createRecord(RecordRequestDto.Create requestDto) {
         // 사용자 조회
@@ -57,6 +66,10 @@ public class RecordServiceImpl implements RecordService {
         if (existingRecord != null) {
             throw new IllegalArgumentException("이미 해당 날짜와 끼니에 대한 기록이 존재합니다.");
         }
+
+        // 사용자의 해당 날짜 기록 확인
+        boolean hasRecordToday = recordRepository.existsByUserAndDate(user, requestDto.getDate());
+
 
         // 사용자의 끼니(MealType)에 해당하는 식단 데이터 조회
         List<MealMealItemMapping> mealMappings = mealMealItemMappingRepository.findByMeal_LocalDateAndMeal_Type(
@@ -79,6 +92,14 @@ public class RecordServiceImpl implements RecordService {
                 .build();
 
         Record savedRecord = recordRepository.save(record);
+
+        // 하루에 한 번이라도 기록하면 record_complete = true 설정
+        if (!hasRecordToday) {
+            user.markRecordComplete();
+            userRepository.save(user);
+        }
+
+        checkAndAdvanceStage(user.getGroup());
 
         // MealItem을 기반으로 RecordedFood 생성
         List<RecordedFood> recordedFoods = mealMappings.stream()
@@ -157,6 +178,10 @@ public class RecordServiceImpl implements RecordService {
 
         // MealType 변환
         MealType type = requestDto.getMealType();
+
+        // 사용자의 해당 날짜 기록 확인
+        boolean hasRecordToday = recordRepository.existsByUserAndDate(user, requestDto.getDate());
+
 
         String uploadedImageUrl = null;
         String gptRawResponseString = null;
@@ -262,6 +287,14 @@ public class RecordServiceImpl implements RecordService {
         Record savedRecord = recordRepository.save(record);
         log.info("✅ Record 저장 완료: recordId={}", savedRecord.getId());
 
+        // 하루에 한 번이라도 기록하면 record_complete = true 설정
+        if (!hasRecordToday) {
+            user.markRecordComplete();
+            userRepository.save(user);
+        }
+
+        checkAndAdvanceStage(user.getGroup());
+
         // Response 생성
         return RecordResponseDto.builder()
                 .recordId(savedRecord.getId())
@@ -355,6 +388,42 @@ public class RecordServiceImpl implements RecordService {
                 .totalFat(totalFat)
                 .build();
     }
+
+    public void checkAndAdvanceStage(Group group) {
+        // 현재 그룹에서 recordComplete = true인 유저 수 확인
+        int recordedCount = userRepository.countByGroupAndRecordCompleteTrue(group);
+
+        if (recordedCount >= 5) {
+            advanceStage(group);
+        }
+    }
+
+    private void advanceStage(Group group) {
+        // 현재 그룹의 가장 최신 스테이지 가져오기
+        StageRecord currentStageRecord = stageRecordRepository
+                .findTopByGroupOrderByStageNumberDesc(group)
+                .orElseThrow(() -> new CustomException(GeneralErrorCode.GROUP_NOT_FOUND_404));
+
+        // 현재 스테이지 완료 처리
+        currentStageRecord.completeStage();
+        stageRecordRepository.save(currentStageRecord);
+
+        // 그룹의 현재 스테이지 증가
+        group.advanceStage();
+        groupRepository.save(group);
+
+        // 새로운 스테이지 기록 생성
+        StageRecord newStageRecord = StageRecord.builder()
+                .group(group)
+                .stageNumber(group.getCurrentStage())
+                .totalUsers((int) userRepository.countByGroup(group))
+                .recordedUsers(0) // 새로운 스테이지이므로 기록된 사용자 0명부터 시작
+                .isCompleted(false)
+                .build();
+
+        stageRecordRepository.save(newStageRecord);
+    }
+
 
 
 }
