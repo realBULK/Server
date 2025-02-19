@@ -10,6 +10,8 @@ import umc7th.bulk.dailyMeal.entity.DailyMeal;
 import umc7th.bulk.dailyMeal.exception.DailyMealErrorCode;
 import umc7th.bulk.dailyMeal.exception.DailyMealException;
 import umc7th.bulk.dailyMeal.repository.DailyMealRepository;
+import umc7th.bulk.global.error.GeneralErrorCode;
+import umc7th.bulk.global.error.exception.CustomException;
 import umc7th.bulk.meal.dto.MealDTO;
 import umc7th.bulk.meal.dto.MealResponseDTO;
 import umc7th.bulk.meal.entity.Meal;
@@ -31,11 +33,15 @@ public class MealQueryServiceImpl implements MealQueryService{
     private final DailyMealRepository dailyMealRepository;
     private final MealMealItemMappingRepository mappingRepository;
     @Override
-    public MealResponseDTO.MealPreviewDTO getMealItems(Long dailyMealId, MealType type, Long cursorId, int pagSize) {
+    public MealResponseDTO.MealPreviewDTO getMealItems(Long userId, Long dailyMealId, MealType type, Long cursorId, int pagSize) {
 
         // 하루 식단 확인
         DailyMeal dailyMeal = dailyMealRepository.findById(dailyMealId).orElseThrow(
                 () -> new DailyMealException(DailyMealErrorCode.NOT_FOUND));
+
+        if (!dailyMeal.getMealPlan().getUser().getId().equals(userId)) {
+            throw new CustomException(GeneralErrorCode.FORBIDDEN_403);
+        }
         
         // 끼니 조회
         Meal meal = dailyMeal.getMeals().stream()
@@ -43,15 +49,7 @@ public class MealQueryServiceImpl implements MealQueryService{
                 .findFirst()
                 .orElseThrow(() -> new MealErrorException(MealErrorCode.NOT_FOUND));
 
-        // 유저 조회
-        Long userId = meal.getDailyMeal().getMealPlan().getUser().getId();
 
-        // MealMealItemMapping 통해 MealItem 가져오기
-        List<MealMealItemMapping> mealItemMappings = mappingRepository.findByMealId(meal.getId());
-//        List<MealItem> mealItems = mealItemMappings.stream()
-//                .map(mealMealItemMapping -> mealMealItemMapping.getMealItem())
-//                .toList();
-        
         // 칼로리, 탄단지 계산
         Long mealCalories = meal.getMealCalories();
         Long mealCarbos = meal.getMealCarbos();
