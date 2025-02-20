@@ -42,7 +42,7 @@ public class DailyMealServiceImpl implements DailyMealService {
     @Override
     public DailyMealResponseDTO.DailyMealGetResponseDTO getDailyMeal(Long userId, Long dailyMealId) {
 
-        DailyMeal dailyMeal = dailyMealRepository.findById(dailyMealId).orElseThrow(() ->
+        DailyMeal dailyMeal = dailyMealRepository.findByIdWithMealPlanAndUser(dailyMealId).orElseThrow(() ->
                 new DailyMealException(DailyMealErrorCode.NOT_FOUND));
 
         if (!dailyMeal.getMealPlan().getUser().getId().equals(userId)) {
