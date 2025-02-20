@@ -36,7 +36,7 @@ public class MealQueryServiceImpl implements MealQueryService{
     public MealResponseDTO.MealPreviewDTO getMealItems(Long userId, Long dailyMealId, MealType type, Long cursorId, int pagSize) {
 
         // 하루 식단 확인
-        DailyMeal dailyMeal = dailyMealRepository.findById(dailyMealId).orElseThrow(
+        DailyMeal dailyMeal = dailyMealRepository.findByIdWithMealPlanAndUser(dailyMealId).orElseThrow(
                 () -> new DailyMealException(DailyMealErrorCode.NOT_FOUND));
 
         if (!dailyMeal.getMealPlan().getUser().getId().equals(userId)) {
