@@ -27,6 +27,10 @@ public enum GeneralErrorCode implements BaseErrorCode {
 
     //500
     INTERNAL_SERVER_ERROR_500(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 내부 오류가 발생했습니다."),
+
+    //기록
+    RECORD_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"RECORD400", "이미 해당 날짜와 끼니에 대한 기록이 존재합니다."),
+    MEAL_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "RECORD404", "해당 끼니의 식단을 찾을 수 없습니다.");
     ;
 
 
