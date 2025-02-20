@@ -64,7 +64,7 @@ public class RecordServiceImpl implements RecordService {
                 .orElse(null);
 
         if (existingRecord != null) {
-            throw new IllegalArgumentException("이미 해당 날짜와 끼니에 대한 기록이 존재합니다.");
+            throw new CustomException(GeneralErrorCode.RECORD_ALREADY_EXISTS);
         }
 
         // 사용자의 해당 날짜 기록 확인
@@ -76,7 +76,7 @@ public class RecordServiceImpl implements RecordService {
                 requestDto.getDate(), requestDto.getMealType());
 
         if (mealMappings.isEmpty()) {
-            throw new IllegalArgumentException("해당 끼니의 식단을 찾을 수 없습니다.");
+            throw new CustomException(GeneralErrorCode.MEAL_PLAN_NOT_FOUND);
         }
 
         // 새로운 Record 생성
