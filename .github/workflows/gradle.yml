@@ -29,8 +29,8 @@ jobs:
       - name: web docker build and push
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker build -t eunsxx/bulk-server .
-          docker push eunsxx/bulk-server
+          docker build -t eunsxx/bulk-server:latest .
+          docker push eunsxx/bulk-server:latest
 
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
@@ -39,13 +39,16 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY }}
           script: |
-            
             cd /home/ubuntu/app
             
-            ## docker-compose 실행
+            ## 도커 권한 설정
             sudo chmod 666 /var/run/docker.sock
+            
+            ## 기존 컨테이너 삭제
             sudo docker rm -f $(docker ps -qa)
-            sudo docker pull eunsxx/bulk-server
-            sudo docker compose -f docker-compose.yml --env-file ./.env.prod up -d
-            sudo docker image prune -f
 
+            ## 최신 이미지 가져오기
+            sudo docker pull eunsxx/bulk-server:latest
+
+            ## 최신 이미지로 컨테이너 재실행 (강제 재생성)
+            sudo docker compose -f docker-compose.yml --env-file ./.env.prod up -d --force-recreate
